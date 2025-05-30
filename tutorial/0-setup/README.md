@@ -66,6 +66,32 @@ Always refer to the [latest instructions](https://learn.microsoft.com/en-us/wind
 
 Cool. From now on, any further commands you see in this tutorial will be run in the WSL shell. Try not to get it confused with the Windows command prompt or PowerShell. Should you close your terminal window, you will have to reopen WSL by typing `wsl`.
 
+### Finding your Windows files in WSL, and vice versa.
+
+**WSL -> Windows**
+
+You can access your **Windows files from WSL** by navigating via the `/mnt/` directory. Try listing the contents of your `/mnt/` directory:
+
+```bash
+ls /mnt/
+```
+
+You'll probably see directories like `c`, `d`, etc., which correspond to your Windows drives. For example, your C: drive is located at `/mnt/c/`. A bit of tab-autocompletion does magic here.
+
+**Windows -> WSL**
+
+Should you want to instead access your **WSL** files from Windows, you can do so by navigating to the special URI `\\wsl$\` in Windows Explorer.
+Your WSL home directory is located at `\\wsl$\Ubuntu\home\<your-username>` (replace `Ubuntu` with the name of your WSL distribution, if different). You can also access other directories in your WSL file system from Windows Explorer.
+
+
+### Editing WSL files from Windows (and vice versa)
+
+Preferably, you should edit files in your WSL environment directly using WSL, and your Windows files directly using Windows. Mixing the two can be done, but it can lead to issues with performance and file permissions. 
+
+The first recommendation would be to use a terminal-based editor like `neovim` [(link)](https://neovim.io/) to edit WSL files directly from the WSL shell. (In fact, I am going to take this opportunity to *highly* recommend you to learn to use `neovim` as your primary text editor *(or at the very least [VIM motions](https://www.barbarianmeetscoding.com/boost-your-coding-fu-with-vscode-and-vim/moving-blazingly-fast-with-the-core-vim-motions/) which can also be used in tons of other editors you already know).* But truth be told, there's a pretty steep learning curve, so please do seriously consider this recommendation, but it might be best to postpone that for later.)
+
+Another solid (although technically rule-breaking) option is to run a graphical code editor like [Visual Studio Code](https://code.visualstudio.com/) or [JetBrains IDEs](https://www.jetbrains.com/products.html) from Windows, and open your project directory (in the WSL directory) directly in those editors, using the WSL path listed above. Again, this is *technically* discouraged, but it works well enough for this tutorial.
+
 ## 0.1 - Setting up Git and GitHub
 
 In this section, we will set up git on our machine, setup a repoistory on GitHub, and authenticate out device to GitHub using SSH. This will allow us to clone and push code to our GitHub repositories.
