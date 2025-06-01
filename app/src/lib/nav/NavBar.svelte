@@ -3,11 +3,7 @@
 <script lang="ts">
 	import type { PageInfo } from '$lib/types/pageInfo';
 
-	let pages: PageInfo[] = [
-		{ name: 'Home', url: '/', description: 'The home page.' },
-		{ name: 'About Us', url: '/about', description: 'Learn more about us.' },
-		{ name: 'Dashboard', url: '/dashboard', description: 'View the dashboard.' },
-	];
+	let { pages }: { pages: PageInfo[] } = $props();
 </script>
 
 <div class="flex gap-x-4">
