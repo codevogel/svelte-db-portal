@@ -330,9 +330,30 @@ git commit -m "Init Svelte project"
 git push origin main
 ```
 
-Congratulations! You have successfully set up your development environment for the Svelte project.
+Congratulations! You have successfully set up your first Svelte app.
 
-## 0.5 - Summary
+## 0.5 - Editor plugins
+
+To make your development experience smoother, we recommend installing some plugins for your code editor.
+
+If you use a different code editor than the ones listed below, try searching for similar plugins that provide Svelte, ESLint, Prettier, and Tailwind CSS support.
+
+- **VSCode**:
+    - [Svelte for VSCode](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode): Svelte language support.
+    - [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint): Linting support for JavaScript and TypeScript.
+    - [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode): Code formatting support.
+    - [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss): Tailwind CSS support.
+
+- **Neovim**:
+    - (A good starting point for Neovim configuration is [kickstart-modular](https://github.com/dam9000/kickstart-modular.nvim))
+    - Install the following language servers (e.g. using `lspconfig` from the kickstart example): 
+        - `eslint-lsp`
+        - `prettier`
+        - `svelte-language-server`
+        - `tailwindcss-language-server`
+        - `typescript-language-server`
+
+## 0.6 - Summary
 
 To wrap up, we have:
 
@@ -342,5 +363,6 @@ To wrap up, we have:
 - Installed XAMPP (or LAMPP) to run a local MySQL database.
 - Created a new Svelte project using the Svelte CLI.
 - Pushed our initial project to GitHub.
+- Installed some handy editor plugins to improve our development experience. 
 
 In the [next chapter](/tutorial/1-svelte/README.md), we will start building the basic structure for our Svelte application. 
