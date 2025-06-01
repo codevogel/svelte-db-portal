@@ -140,7 +140,7 @@ Let's break down the relevant parts of this structure for now:
 - `tsconfig.json`: This file is used to configure TypeScript for your application. It defines the compiler options and the files that should be included in the compilation.
 - `vite.config.ts`: This file is used to configure Vite, which is a build tool for modern web applications. It defines how your application should be built and served.
 
-### Editing our first page
+## Editing our first page
 
 Let's take a look at `src/routes/+page.svelte`:
 
@@ -201,7 +201,7 @@ But since we've installed [Tailwind CSS](), we won't be using those. Instead we'
 
 Okay, so we know we can do some pretty basic stuff now. Let's look at something a little more advanced.
 
-### Adding our first reactive element ($state and $derived)
+## Adding our first reactive element ($state and $derived)
 
 Just to get a feel of how Svelte works, let's add a little button and some text that displays the number of times that we clicked on that button.
 
@@ -265,7 +265,7 @@ Let's see it in action:
 Cool! It's a simple example, but gives a good idea of how Svelte's reactivity works.
 Now let's see some of SvelteKit's routing features in action.
 
-### Adding new pages
+## Adding pages and routing
 
 To add a new page to our application, we first need to create a new directory in the `src/routes` directory. 
 The name of that directory will be the name of the route, so to create an "About" page, we would create a new directory called `about` in the `src/routes` directory, and then add a `+page.svelte` file inside that directory:
@@ -315,7 +315,7 @@ And again,
 
 Currently, the dashboard pages are all separate pages, so the Dashboard header is not visible on the user and session pages. We can however consolidate the dashboard pages to share a common layout, which we will do in the next section. 
 
-### Using the `+layout.svelte` file (and $props)
+## Using `+layout.svelte` and $props
 
 The `+layout.svelte` file is used to define a layout for your application. It allows you to wrap all the pages in your application with a common layout, such as a navigation bar, footer, or other components that should be present on every page.
 
@@ -414,7 +414,7 @@ Cool!
 However, we now have some duplicate markup for our navigation in both our `src/routes/+layout.svelte` file as well as our `src/routes/dashboard/+layout.svelte` file that doesn't really *directly relate* to defining a layout. Besides, the urls are hardcoded. We can do much better. Applying the [Single Reponsibility Principle](https://en.wikipedia.org/wiki/Single-responsibility_principle), we should extract this navigation logic into a separate component, and then use that component in our layout.
 Luckily, Svelte makes this easy to do.
 
-### Creating your first Svelte component
+## Creating your first Svelte component
 
 A Svelte component is a self-contained piece of UI, and can contain it's own logic, styles, and markup. A component can also accept props, which are used to pass data from the parent component to the child component.
 
@@ -457,7 +457,7 @@ And now, let's import this component in our `/src/routes/+layout.svelte` file. (
 That already looks much better, but this component isn't very reusable just yet.
 We should look into re-using this component in our `src/routes/dashboard/+layout.svelte` file as well, but to do that we first need to understand how to pass props to components, and how to use the `#each` block to iterate over arrays in Svelte.
 
-### Using the \#each block
+## Using the \#each block
 
 To make our navigation bar more easy to maintain, we can make use of the `[#each](https://svelte.dev/docs/svelte/each) block to iterate over an array of pages and render the links dynamically. This way, if we want to add or remove pages, we only need to update the array, rather than the markup.
 
@@ -490,7 +490,7 @@ Let's modify our `NavBar.svelte` component to use the `#each` block:
 Hopefully you can already see where this is going. We have an array of `pages`, and we have already learned we can use `$props()` to pass data to components. So eventually, we'll be removing any information about the pages from our `NavBar.svelte` component, and instead pass it from the parent component.
 Before we get into that, we must take another quick detour to understand how to add type safety to our components using TypeScript, so we know we'll be passing the correct data around.
 
-### Using Typescript in Svelte components
+## Using Typescript in Svelte components
 
 Svelte supports TypeScript out of the box, which allows us to define types for our variables and props. This can help us catch errors early and improve the maintainability of our code.
 
@@ -540,7 +540,7 @@ Awesome! This will definitely help us catch errors later as we increase the comp
 
 Now, as promised, we can start making the `NavBar.svelte` component more reusable by exposing the `pages` array as a prop, and passing the data from the parent component instead of hardcoding it in the component itself.
 
-### Reusing Svelte components with $props()
+## Reusing Svelte components with $props()
 
 Currently, our `NavBar.svelte` component has the `pages` array hardcoded inside the component. We want to make it more reusable by passing the `pages` array as a prop from the parent component. This way, we can re-use the `NavBar` component to display the links to Home, About Us, and Dashboard, but also to display the links to the Dashboard sub-pages.
 
@@ -613,7 +613,7 @@ Let's do the same for our `src/routes/dashboard/+layout.svelte` file, so that we
 Okay, that looks much better. But the keen eyed among you may have noticed that we have now re-introduced an earlier problem. The `pages` array is now stored in two different places, and neither of them should really be responsible for storing the navigation data anyway.
 Let's fix that using stores.
 
-### Storing data in Svelte stores 
+## Svelte stores 
 
 Svelte [stores](https://svelte.dev/docs/svelte/stores) are a way to share reactive data across components. Although most of it's reactive usecases have been subceeded by the arrival of `runes` in Svelte 5, in this case they're a nice way to store our navigation data in a single place, so we can easily access it from anywhere else.
 
@@ -674,7 +674,7 @@ And use the stores in our `+layout.svelte` files instead (note the `$` prefix to
 
 Now we have a single source for our navigation data. We can easily add or remove pages from the store, and re-use the `NavBar` component across our root and dashboard `+layout.svelte` files without duplicating the navigation data.
 
-## 1.3 - Wrapping up
+## Wrapping up
 
 We now know how to:
 - Create a Svelte application using SvelteKit.
