@@ -1,8 +1,9 @@
-# 0 - Setup
+# Setup
 
 In this chapter, we will set up the development environment for the project. We'll walk you through the steps to install the necessary tools and libraries, so you can start working on the project in the next chapter [(1 - Svelte)](/tutorial/1-svelte/README.md).
 
-## Learning goals:
+## Chapter overview 
+### Learning goals
 
 At the end of this chapter, you will be able to:
 - (For Windows users:) Install Windows Subsystem for Linux (WSL) on your Windows machine.
@@ -11,12 +12,12 @@ At the end of this chapter, you will be able to:
 - Setup a local MySQL database using XAMPP (or more specifically, LAMPP)
 - Create a new Svelte project using the CLI.
 
-## Prerequisites
+### Prerequisites
 - A computer with internet access.
 - Basic knowledge of command line interface (CLI) commands. (Learning resources are provided below.)
 - Basic knowledge of Git and GitHub.
 
-## Learning Resources
+### Learning Resources
 - [Windows Subsystem for Linux (WSL) Installation Guide](https://docs.microsoft.com/en-us/windows/wsl/install)
 - [GitHub SSH Authentication Guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh)
 - [Node.js Installation Guide](https://nodejs.org/en/download/)
@@ -26,7 +27,7 @@ At the end of this chapter, you will be able to:
 - [Codecademy's Command Line Course](https://www.codecademy.com/learn/learn-the-command-line)
 - [The Coding Train's Video on the Shell](https://www.youtube.com/watch?v=FnkkzgYuXUM)
 
-## 0.0 - Installing WSL 
+## Installing WSL 
 
 If you are already using a **Linux-based OS**, you can skip this section. **macOS users** can continue, but should be aware that this tutorial is written with Linux in mind, so some commands and tools may differ).
 
@@ -92,7 +93,7 @@ The first recommendation would be to use a terminal-based editor like `neovim` [
 
 Another solid (although technically rule-breaking) option is to run a graphical code editor like [Visual Studio Code](https://code.visualstudio.com/) or [JetBrains IDEs](https://www.jetbrains.com/products.html) from Windows, and open your project directory (in the WSL directory) directly in those editors, using the WSL path listed above. Again, this is *technically* discouraged, but it works well enough for this tutorial.
 
-## 0.1 - Setting up Git and GitHub
+## Setting up Git and GitHub
 
 In this section, we will set up git on our machine, setup a repoistory on GitHub, and authenticate out device to GitHub using SSH. This will allow us to clone and push code to our GitHub repositories.
 
@@ -201,7 +202,7 @@ cd myreponame
 
 Congratulations! You have successfully cloned your GitHub repository to your local machine. You can now start working on your project and push changes back to GitHub.
 
-## 0.2 - Installing Node.js and npm
+## Installing Node.js and npm
 
 Okay, we now have a GitHub repository set up, and we can push code to it. We just need to set up a few more things before we can get to the real work. To run our Svelte application, we will use **Node.js** and **npm** (Node Package Manager).
 
@@ -215,7 +216,7 @@ Refer to the [Node.js installation guide](https://nodejs.org/en/download) for th
 
 > ⚠️First-time WSL users should be aware that you should follow the Linux instructions, not the Windows instructions.
 
-## 0.3 - Installing XAMPP (or LAMPP)
+## Installing XAMPP (or LAMPP)
 
 With Git and Node.js set up, we now need to install XAMPP (or more accurately, LAMPP, which is the Linux version of XAMPP).
 
@@ -274,7 +275,7 @@ sudo /opt/lampp/lampp start
 
 Awesome - looks like we're almost done with the setup! We just need to create our Svelte project.
 
-## 0.4 - Creating a new Svelte project
+## Creating a new Svelte project
 
 To create our `Svelte` app, we will use `SvelteKit`. In the next chapter, we will be going into more details on why we are using Svelte(Kit), but for now, let's just set up the project.
 
@@ -332,7 +333,7 @@ git push origin main
 
 Congratulations! You have successfully set up your first Svelte app.
 
-## 0.5 - Editor plugins
+## Editor plugins
 
 To make your development experience smoother, we recommend installing some plugins for your code editor.
 
@@ -353,7 +354,7 @@ If you use a different code editor than the ones listed below, try searching for
         - `tailwindcss-language-server`
         - `typescript-language-server`
 
-## 0.6 - Summary
+## Summary
 
 To wrap up, we have:
 

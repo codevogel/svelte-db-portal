@@ -1,8 +1,9 @@
-# 1 - Svelte
+# Svelte
 
 In this chapter, we will set up the skeleton for our Svelte application, creating the basic UI, routing, and page content.
 
-## Learning goals:
+## Chapter Overview
+### Learning goals
 
 At the end of this chapter, you will be able to:
 - Understand why we will use Svelte to build our application.
@@ -27,12 +28,12 @@ At the end of this chapter, you will have created:
         - `/dashboard/sessions`: A sessions page with some sample content.
 - A reusable, styled, and modular `NavBar.svelte` component.
 
-## Prerequisites
+### Prerequisites
 
 - Basic understanding of HTML, CSS, and JavaScript/TypeScript.
 - Basic familiarity with web development terminology and concepts.
 
-## Learning Resources
+### Learning Resources
 
 - [HTML (W3 schools)](https://www.w3schools.com/html/)
 - [CSS (W3 schools)](https://www.w3schools.com/css/)
@@ -48,7 +49,7 @@ At the end of this chapter, you will have created:
 - Tailwind CSS:
     - [Tailwind CSS (Official Documentation)](https://tailwindcss.com/docs/styling-with-utility-classes)
 
-## 1.0 - Why Svelte?
+## Why Svelte?
 
 Svelte and SvelteKit are awesome frameworks for building web applications. There are many other frameworks available, such as [React](https://reactjs.org/), [Vue](https://vuejs.org/), and [Angular](https://angular.io/), but Svelte stands out for its ease of use and simple yet thorough documentation. Svelte also has an awesome [interactive tutorial](https://svelte.dev/tutorial/svelte/welcome-to-svelte) that is a great way to learn the basics of the framework.
 
@@ -67,7 +68,7 @@ Yes! But maybe for different reasons than you might hope or think.
 **Svelte is just nice to work with. Which means you will be more likely to finish this course**. It has simple and intuitive syntax, and uses a compiler to abstract away much of the complex logic you might find in other frameworks. This means you can focus on building your application without getting too bogged down in the details of the framework itself. 
 This is especially important for a course like this, where we want you to be able to focus on building your application and learning the concepts, rather than getting stuck on the framework itself.
 
-## 1.1 - Svelte and SvelteKit
+## Svelte and SvelteKit
 
 These two terms may seem similar, but they refer to different things:
 
@@ -83,7 +84,7 @@ Here's a simple analogy: We can use Svelte to create a web page. SvelteKit allow
 Refer to the [SvelteKit documentation](https://svelte.dev/docs/kit/introduction#SvelteKit-vs-Svelte) for more information on the differences between Svelte and SvelteKit.
 
 
-## 1.2 - Basic Svelte
+## Basic Svelte
 
 In the previous section, we have created our Svelte application using the 'Skeleton' template. Now, we will set up our basic application structure.
 
@@ -689,5 +690,5 @@ We now know how to:
 
 We have also built a simple web portal with a home page, an about page, and a dashboard with user and session pages, all using SvelteKit and Tailwind CSS.
 
-Now that we have some experience with Svelte as a web development framework, let's try to create something a little more pretty. In the next chapter, we will learn how to use Skeleton.Dev to make our site look more professional.
-See [2.0 - Skeleton.Dev](/tutorial/2-skeleton-dev/README.md) for more information.
+Now that we have some experience with Svelte as a web development framework, let's try to create something a little more pretty. In the next chapter, we will learn how to add some pretty UI to our application. 
+See [2.0 - UI](/tutorial/2-ui/README.md) for more information.
