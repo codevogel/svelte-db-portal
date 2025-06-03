@@ -1,11 +1,11 @@
 // /src/lib/stores/navigation.ts
 
-import { readable } from "svelte/store";
+import { readable } from 'svelte/store';
 
 export const pages = readable([
 	{ name: 'Home', url: '/', description: 'The home page.' },
-	{ name: 'About Us', url: '/about', description: 'Learn more about us.' },
-	{ name: 'Dashboard', url: '/dashboard', description: 'View the dashboard.' }
+	{ name: 'Dashboard', url: '/dashboard', description: 'View the dashboard.' },
+	{ name: 'About Us', url: '/about', description: 'Learn more about us.' }
 ]);
 
 export const dashboardPages = readable([
