@@ -624,15 +624,16 @@ Let's create a `readable` store for our `pages` arrays at `src/lib/stores/naviga
 
 // /src/lib/stores/navigation.ts
 
-import { readable } from "svelte/store";
+import { readable, type Readable } from "svelte/store";
 
-export const pages = readable([
+export const pages: Readable<PageInfo[]> = readable([
 	{ name: 'Home', url: '/', description: 'The home page.' },
 	{ name: 'About Us', url: '/about', description: 'Learn more about us.' },
 	{ name: 'Dashboard', url: '/dashboard', description: 'View the dashboard.' }
 ]);
 
-export const dashboardPages = readable([
+export const dashboardPages: Readable<PageInfo[]> = readable([
+	{ name: 'Overview', url: '/dashboard/', description: 'Dashboard overview.' },
 	{ name: 'User', url: '/dashboard/user', description: 'Query user information' },
 	{ name: 'Session', url: '/dashboard/session', description: 'View session details.' }
 ]);
@@ -671,7 +672,6 @@ And use the stores in our `+layout.svelte` files instead (note the `$` prefix to
 <!-- Here, the content from the sub-routes renders -->
 {@render children()}
 ```
-
 
 Now we have a single source for our navigation data. We can easily add or remove pages from the store, and re-use the `NavBar` component across our root and dashboard `+layout.svelte` files without duplicating the navigation data.
 
