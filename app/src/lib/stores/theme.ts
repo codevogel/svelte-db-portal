@@ -1,3 +1,5 @@
+// /src/lib/stores/theme.ts
+
 import type { Theme } from '$lib/types/theme';
 import { readable, type Readable } from 'svelte/store';
 
@@ -7,5 +9,3 @@ export const themes: Readable<Theme[]> = readable([
 	{ label: '📺 Vintage', value: 'vintage' },
 	{ label: '💮 Modern', value: 'modern' }
 ]);
-
-
