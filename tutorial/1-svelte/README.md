@@ -509,7 +509,7 @@ export interface PageInfo {
 }
 ```
 
-Now we can import and use this `Page` interface in our `NavBar.svelte` component:
+Now we can import and use this `PageInfo` interface in our `NavBar.svelte` component:
 
 ```svelte
 <!-- /src/lib/nav/NavBar.svelte -->
@@ -519,8 +519,8 @@ Now we can import and use this `Page` interface in our `NavBar.svelte` component
 
 	let pages: PageInfo[] = [
 		{ name: 'Home', url: '/', description: 'The home page.' },
-		{ name: 'About Us', url: '/about', description: 'Learn more about us.' },
-		{ name: 'Dashboard', url: '/dashboard', description: 'View the dashboard.' }
+		{ name: 'Dashboard', url: '/dashboard', description: 'View the dashboard.' },
+		{ name: 'About Us', url: '/about', description: 'Learn more about us.' }
 	];
 </script>
 
@@ -539,11 +539,11 @@ It may look like we haven't changed much, but we have now added type safety to o
 
 Awesome! This will definitely help us catch errors later as we increase the complexity of our application.
 
-Now, as promised, we can start making the `NavBar.svelte` component more reusable by exposing the `pages` array as a prop, and passing the data from the parent component instead of hardcoding it in the component itself.
+Now, as promised, we can start making the `NavBar.svelte` component more reusable by exposing the `pages` array as a prop, and passing the data from the parent component instead of hard-coding it in the component itself.
 
 ## Reusing Svelte components with $props()
 
-Currently, our `NavBar.svelte` component has the `pages` array hardcoded inside the component. We want to make it more reusable by passing the `pages` array as a prop from the parent component. This way, we can re-use the `NavBar` component to display the links to Home, About Us, and Dashboard, but also to display the links to the Dashboard sub-pages.
+Currently, our `NavBar.svelte` component has the `pages` array hard-coded inside the component. We want to make it more reusable by passing the `pages` array as a prop from the parent component. This way, we can re-use the `NavBar` component to display the links to Home, About Us, and Dashboard, but also to display the links to the Dashboard sub-pages.
 
 To do this, let's expose the `pages` array as a prop in `NavBar.svelte`:
 
