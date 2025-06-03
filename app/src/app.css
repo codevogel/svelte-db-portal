@@ -2,14 +2,16 @@
 
 @import 'tailwindcss';
 
+/* Skeleton imports */
 @import '@skeletonlabs/skeleton';
 @import '@skeletonlabs/skeleton/optional/presets';
+@source '../node_modules/@skeletonlabs/skeleton-svelte/dist';
 
+/* Skeleton themes */
 @import '@skeletonlabs/skeleton/themes/catppuccin';
 @import '@skeletonlabs/skeleton/themes/cerberus';
 @import '@skeletonlabs/skeleton/themes/vintage';
 @import '@skeletonlabs/skeleton/themes/modern';
 
+/* Tailwind dark mode toggle */
 @custom-variant dark (&:where([data-mode=dark], [data-mode=dark] *));
-
-@source '../node_modules/@skeletonlabs/skeleton-svelte/dist';
