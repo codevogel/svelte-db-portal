@@ -14,7 +14,9 @@
 	<p>We're building this website. But for now, here's a button. How many times can you click it?</p>
 
 	<!-- The button will increment the buttonClicks state variable when clicked. -->
-	<button class="max-w-36 rounded-lg border px-4" onclick={() => buttonClicks++}>Click me!</button>
+	<button class="btn preset-filled-primary-500 max-w-36" onclick={() => buttonClicks++}
+		>Click me!</button
+	>
 	<!-- The text below will update reactively based on the buttonClicks state variable. -->
 	<p>You have clicked the button <span class="text-red-500">{buttonClicks}</span> {timeOrTimes}.</p>
 </div>
