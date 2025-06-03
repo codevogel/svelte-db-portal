@@ -22,7 +22,7 @@
 <div class="align-items-center bg-primary-200-800 grid h-[var(--h-navbar)] w-full grid-cols-5 p-4">
 	<div class="col-span-1 flex items-center justify-start">
 		<Modal
-			classes="block"
+			classes="block md:hidden"
 			open={drawerState}
 			onOpenChange={(e) => (drawerState = e.open)}
 			triggerBase="btn hover:preset-tonal"
@@ -59,15 +59,30 @@
 				</article>
 			{/snippet}
 		</Modal>
+		<div class="hidden md:flex md:items-center md:gap-x-2">
+			<button class="btn hover:preset-tonal" onclick={() => goto('/')}>
+				<DatabaseZap />
+				<h3 class="h3">Web Portal</h3>
+			</button>
+		</div>
 	</div>
 
 	<div class="col-span-3 flex items-center justify-center">
-		<button class="btn hover:preset-tonal" onclick={() => goto('/')}>
+		<button class="btn hover:preset-tonal md:hidden" onclick={() => goto('/')}>
 			<span class="flex items-center justify-center gap-x-2">
 				<DatabaseZap />
 				<h3 class="h3">Web Portal</h3></span
 			>
 		</button>
+		<span class="hidden md:flex md:justify-center">
+			{#each $pages as page (page.name)}
+				<button class="btn hover:preset-tonal h5 justify-start" onclick={() => goto(page.url)}>
+					<h5 class="h5">
+						{page.name}
+					</h5>
+				</button>
+			{/each}
+		</span>
 	</div>
 	<div class="col-span-1 flex items-center justify-end">
 		<ThemeSwitch />
