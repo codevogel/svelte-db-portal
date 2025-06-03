@@ -4,11 +4,19 @@
 	import '../app.css';
 	import NavBar from '$lib/nav/NavBar.svelte';
 	import { pages } from '$lib/stores/navigation';
-	import ThemeSwitch from '$lib/ui/control/ThemeSwitch.svelte';
 
 	let { children } = $props();
 </script>
 
-<ThemeSwitch />
-<NavBar pages={$pages} />
-{@render children()}
+<div class="grid min-h-screen grid-rows-[auto_1fr_auto]">
+	<!-- Header -->
+	<header>
+		<NavBar pages={$pages} />
+	</header>
+	<!-- Page -->
+	<main class="space-y-4">
+		{@render children()}
+	</main>
+	<!-- Footer -->
+	<footer></footer>
+</div>
