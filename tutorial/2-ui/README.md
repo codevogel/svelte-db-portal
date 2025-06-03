@@ -970,4 +970,75 @@ Key points to note here:
 - We show and hide the small screen `Bar` navigation using `block lg:hidden`
 - We use the `value` state variable to keep track of the currently selected page, and update it when the user clicks on a navigation item.
 - We use the `currentPageUrl` (which is derived from [the 'page' state](https://svelte.dev/docs/kit/$app-state#page)) to determine the page that is currently being viewed, and highlight the corresponding navigation item by setting the `selected` prop on the `Navigation.Tile` component to true.
-- We directly use the `dashboardPage.icon` as a component in Svelte. This is a neat trick - and is possible because we stored the Component directly into the `icon` field in the navigation store (`src/lib/stores/navigation.ts`).
+- We directly use the `dashboardPage.icon` as a component in Svelte. This is a neat trick - and is possible because we stored the Icon Component directly into the `icon` field in the navigation store (`src/lib/stores/navigation.ts`).
+
+### A custom Card component
+
+[Cards](https://www.skeleton.dev/docs/tailwind/cards) are a great way to display information in a visually appealing way.
+
+Let's create a custom `Card` component, based on the Skeleton `Card` component, that we can use throughout our application.
+
+We want to create a `Card` component that:
+- Uses the Skeleton `Card` template as a base
+- Allows us to pass in a header, article, and footer section.
+- Allows us to pass in some `$props` to override or extend the card styling where needed.
+
+Let's look at the code for our custom `Card` component and then walk through it:
+
+```svelte
+<!-- /src/lib/ui/views/Card.svelte -->
+
+<script lang="ts">
+	import type { Snippet } from 'svelte';
+
+	let {
+		base = 'card preset-filled-surface-100-900 border-surface-200-800 card-hover divide-surface-200-800 block h-fit max-w-md divide-y border-[1px]',
+		baseExtension = '',
+		headerBase = 'h3 p-8',
+		headerExtension = '',
+		articleBase = 'flex flex-col gap-4 p-8',
+		articleExtension = '',
+		footerBase = 'flex items-center gap-4 p-8',
+		footerExtension = '',
+		header,
+		article,
+		footer
+	}: {
+		base?: string;
+		baseExtension?: string;
+		headerBase?: string;
+		headerExtension?: string;
+		articleBase?: string;
+		articleExtension?: string;
+		footerBase?: string;
+		footerExtension?: string;
+		header?: Snippet;
+		article?: Snippet;
+		footer?: Snippet;
+	} = $props();
+</script>
+
+<div class="{base} {baseExtension}">
+	{#if header}
+		<header class="{headerBase} {headerExtension}">
+			{@render header()}
+		</header>
+	{/if}
+	{#if article}
+		<article class="{articleBase} {articleExtension}">
+			{@render article()}
+		</article>
+	{/if}
+	{#if footer}
+		<footer class="{footerBase} {footerExtension}">
+			{@render footer()}
+		</footer>
+	{/if}
+</div>
+```
+
+Key points to note here:
+	- We use the `Snippet` type from Svelte to allows us to pass in custom markup for the header, article, and footer sections of the card.
+	- We create variables for the base styling of the card, as well as for the header, article, and footer sections.- We create variables for the extensions to the base styling.
+	- We insert the custom markup into the `class` attributes where needed.
+	- We use the `@render` directives to render the Snippets passed in for the header, article, and footer sections.
