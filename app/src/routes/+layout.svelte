@@ -2,8 +2,7 @@
 
 <script lang="ts">
 	import '../app.css';
-	import NavBar from '$lib/nav/NavBar.svelte';
-	import { pages } from '$lib/stores/navigation';
+	import NavBar from '$lib/ui/nav/NavBar.svelte';
 
 	let { children } = $props();
 </script>
@@ -11,7 +10,7 @@
 <div class="grid min-h-screen grid-rows-[auto_1fr_auto]">
 	<!-- Header -->
 	<header>
-		<NavBar pages={$pages} />
+		<NavBar />
 	</header>
 	<!-- Page -->
 	<main class="space-y-4">

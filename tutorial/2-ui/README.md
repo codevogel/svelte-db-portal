@@ -241,7 +241,7 @@ We'll also import the `ThemeSwitch` into our `src/routes/+layout.svelte` file:
 
 <script lang="ts">
 	import '../app.css';
-	import NavBar from '$lib/nav/NavBar.svelte';
+	import NavBar from '$lib/ui/nav/NavBar.svelte';
 	import { pages } from '$lib/stores/navigation';
 	import ThemeSwitch from '$lib/ui/control/ThemeSwitch.svelte';
 
@@ -561,7 +561,7 @@ We'll base our website on the [One Column layout](https://www.skeleton.dev/docs/
 
 <script lang="ts">
 	import '../app.css';
-	import NavBar from '$lib/nav/NavBar.svelte';
+	import NavBar from '$lib/ui/nav/NavBar.svelte';
 	import { pages } from '$lib/stores/navigation';
 
 	let { children } = $props();
@@ -644,7 +644,7 @@ So generally, we write the css directives for small screens first, and then add 
 Let's start with the markup for our small screen NavBar. We'll use the [Modal](https://www.skeleton.dev/docs/integrations/popover/svelte#modal) component from Skeleton to create a hamburger menu that opens a side-bar navigation when clicked.
 
 ```svelte
-<!-- /src/lib/nav/NavBar.svelte -->
+<!-- /src/lib/ui/nav/NavBar.svelte -->
 
 <script lang="ts">
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
@@ -722,6 +722,7 @@ Let's start with the markup for our small screen NavBar. We'll use the [Modal](h
 ```
 
 Key points to note here:
+- We've removed the `pages` prop from the `NavBar` component, as we won't be reusing this component in other places, like we were earlier (in the dashboard). (Not shown here is that we removed the `pages` prop from the `NavBar` component in `src/routes/+layout.svelte` as well.)
 - We use the `Modal` component from Skeleton to create a side-bar navigation that opens when the hamburger menu is clicked.
 - The `trigger` snippet contains the hamburger menu icon, which opens the modal when clicked.
 - The `content` snippet contains the contents of the side bar, in which we list the pages from our `pages` store.
@@ -775,7 +776,7 @@ Let's take a look at the complete `NavBar` component with responsive design:
 Again, here's the full code if you got a little lost along the way:
 
 ```svelte
-<!-- /src/lib/nav/NavBar.svelte -->
+<!-- /src/lib/ui/nav/NavBar.svelte -->
 
 <script lang="ts">
 	import { Modal } from '@skeletonlabs/skeleton-svelte';

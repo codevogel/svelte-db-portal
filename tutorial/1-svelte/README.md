@@ -378,8 +378,6 @@ As said, the `+layout.svelte` files applies to all the pages in its directory *a
 <!-- /src/routes/dashboard/+layout.svelte -->
 
 <script lang="ts">
-	import NavBar from '$lib/nav/NavBar.svelte';
-
 	let { children } = $props();
 </script>
 
@@ -446,7 +444,7 @@ And now, let's import this component in our `/src/routes/+layout.svelte` file. (
 
 <script lang="ts">
 	import '../app.css';
-	import NavBar from '$lib/nav/NavBar.svelte';
+	import NavBar from '$lib/ui/nav/NavBar.svelte';
 
 	let { children } = $props();
 </script>
@@ -465,7 +463,7 @@ To make our navigation bar more easy to maintain, we can make use of the `[#each
 Let's modify our `NavBar.svelte` component to use the `#each` block:
 
 ```svelte
-<!-- /src/lib/nav/NavBar.svelte -->
+<!-- /src/lib/ui/nav/NavBar.svelte -->
 
 <script lang="ts">
 	let pages = [
@@ -512,7 +510,7 @@ export interface PageInfo {
 Now we can import and use this `PageInfo` interface in our `NavBar.svelte` component:
 
 ```svelte
-<!-- /src/lib/nav/NavBar.svelte -->
+<!-- /src/lib/ui/nav/NavBar.svelte -->
 
 <script lang="ts">
 	import type { PageInfo } from '$lib/types/pageInfo';
@@ -548,7 +546,7 @@ Currently, our `NavBar.svelte` component has the `pages` array hard-coded inside
 To do this, let's expose the `pages` array as a prop in `NavBar.svelte`:
 
 ```svelte
-<!-- /src/lib/nav/NavBar.svelte -->
+<!-- /src/lib/ui/nav/NavBar.svelte -->
 
 <script lang="ts">
 	import type { PageInfo } from '$lib/types/pageInfo';
@@ -572,7 +570,7 @@ And pass the `pages` array in `+/src/routes/+layout.svelte` instead:
 
 <script lang="ts">
 	import '../app.css';
-	import NavBar from '$lib/nav/NavBar.svelte';
+	import NavBar from '$lib/ui/nav/NavBar.svelte';
 	
     let pages: PageInfo[] = [
 		{ name: 'Home', url: '/', description: 'The home page.' },
@@ -593,7 +591,7 @@ Let's do the same for our `src/routes/dashboard/+layout.svelte` file, so that we
 <!-- /src/routes/dashboard/+layout.svelte -->
 
 <script lang="ts">
-	import NavBar from '$lib/nav/NavBar.svelte';
+	import NavBar from '$lib/ui/nav/NavBar.svelte';
 
 	let pages: PageInfo[] = [
         { name: 'User', url: '/dashboard/user', description: 'Query user information' },
@@ -646,7 +644,7 @@ And use the stores in our `+layout.svelte` files instead (note the `$` prefix to
 
 <script lang="ts">
 	import '../app.css';
-	import NavBar from '$lib/nav/NavBar.svelte';
+	import NavBar from '$lib/ui/nav/NavBar.svelte';
 	import { pages } from '$lib/stores/navigation';
 
 	let { children } = $props();
@@ -659,7 +657,7 @@ And use the stores in our `+layout.svelte` files instead (note the `$` prefix to
 <!-- /src/routes/dashboard/+layout.svelte -->
 
 <script lang="ts">
-	import NavBar from '$lib/nav/NavBar.svelte';
+	import NavBar from '$lib/ui/nav/NavBar.svelte';
 	import { dashboardPages } from '$lib/stores/navigation';
 
 	let { children } = $props();
