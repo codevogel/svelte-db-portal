@@ -7,6 +7,15 @@ We will use [Skeleton](https://www.skeleton.dev/), an apdative design system pow
 
 ## Chapter overview 
 ### Learning goals
+By the end of this chapter, you will be able to:
+- Install and use lucide-svelte to render icons in Svelte components.
+- Set up the Skeleton UI framework with Tailwind CSS in a SvelteKit project.
+- Apply Skeleton utility classes to style components.
+- Use Skeleton components to build a responsive, mobile-first, themeable layout.
+- Build a reusable theme switcher component that stored user preferences using localStorage and Svelte state.
+- Implement a dynamic NavBar that switches between modal and inline navigation.
+- Use Skeleton’s Navigation.Rail and Navigation.Bar components for section-based navigation.
+- Create a flexible Card component using Svelte snippets and Tailwind styling.
 
 ### Prerequisites
 
@@ -1042,3 +1051,68 @@ Key points to note here:
 	- We create variables for the base styling of the card, as well as for the header, article, and footer sections.- We create variables for the extensions to the base styling.
 	- We insert the custom markup into the `class` attributes where needed.
 	- We use the `@render` directives to render the Snippets passed in for the header, article, and footer sections.
+
+Now, let's use this `Card` component on our home page (at `/`) to replace our demo counter button and display a welcome message instead.
+
+We'll create a new store `src/lib/stores/projectInfo.ts` to hold the name of the game we are building the web portal for (we'll call it `DemoBots`), so we can later re-use it in other pages or components.
+
+```typescript
+// /src/lib/stores/projectInfo.ts
+
+import { readable, type Readable } from 'svelte/store';
+
+export const gameName: Readable<string> = readable('DemoBots');
+```
+
+We also add an image to the `static` folder at the root of our project named `header.jpg` that we can use as a header image for our card.
+
+Then, we alter the `+page.svelte` file to use our new `Card` component and display a welcome message.
+
+```svelte
+<!-- /src/routes/+page.svelte -->
+
+<script lang="ts">
+	import { gameName } from '$lib/stores/projectInfo';
+	import Card from '$lib/ui/views/Card.svelte';
+</script>
+
+<div
+	class="container mx-auto grid h-full w-full grid-cols-1 items-center justify-items-center gap-8 px-4"
+>
+	<Card footerBase="flex gap-x-4 p-8">
+		{#snippet header()}
+			<img src="/header.jpg" class="aspect-[21/9] w-full hue-rotate-90" alt="banner" />
+		{/snippet}
+		{#snippet article()}
+			<div>
+				<h3 class="h3">Welcome!</h3>
+			</div>
+			<p class="opacity-60">
+				This website functions as a web portal to a database for the game '{$gameName}'.
+			</p>
+		{/snippet}
+	</Card>
+</div>
+```
+
+That looks much better!
+
+![[welcome-card.png]]
+
+We now have all major UI components in place to build out the rest of our application.
+
+We have a responsive layout with a navigation bar, a dashboard section with it's own navigation UI, a theme switcher, and a custom card component to display information.
+We'll be looking at a couple more new UI components in the future, such as text fields and tables, but most of these will live inside other `Card` components, so we'll handle them as we go along.
+
+## Wrapping up
+In this chapter, you:
+
+- Installed and used lucide-svelte to add icons to your components.
+- Set up and configured the Skeleton design system for your Svelte app.
+- Created a responsive, mobile-first layout using Skeleton components.
+- Built a theme switcher that stores preferences using localStorage and Svelte state.
+- Implemented a dynamic NavBar that adapts between modal and inline layouts.
+- Used Skeleton’s Navigation.Rail and Navigation.Bar for contextual navigation.
+- Built a reusable Card component with flexible layout slots using Svelte snippets.
+
+You now have a strong foundation for building user-friendly, adaptable interfaces. [In Chapter 3](/tutorial/3-drizzle/README.md), we'll look at implementing Drizzle ORM to interact with our database, allowing us to fetch and display data in our application.
