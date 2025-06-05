@@ -1,4 +1,4 @@
-<!-- /src/lib/nav/NavBar.svelte -->
+<!-- /src/lib/ui/nav/NavBar.svelte -->
 
 <script lang="ts">
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
