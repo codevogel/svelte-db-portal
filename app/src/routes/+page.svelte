@@ -1,22 +1,24 @@
 <!-- /src/routes/+page.svelte -->
 
 <script lang="ts">
-	// The $state rune is used to create a reactive state variable.
-	let buttonClicks: number = $state(0);
-	// The $derived rune is used to create a derived variable that updates when its dependencies change.
-	let timeOrTimes: string = $derived(buttonClicks === 1 ? 'time' : 'times');
+	import { gameName } from '$lib/stores/projectInfo';
+	import Card from '$lib/ui/views/Card.svelte';
 </script>
 
-<div class="flex flex-col gap-2">
-	<h1 class="text-3xl font-bold">Welcome to the Web Portal</h1>
-	<p>We hope you enjoy your stay!</p>
-
-	<p>We're building this website. But for now, here's a button. How many times can you click it?</p>
-
-	<!-- The button will increment the buttonClicks state variable when clicked. -->
-	<button class="btn preset-filled-primary-500 max-w-36" onclick={() => buttonClicks++}
-		>Click me!</button
-	>
-	<!-- The text below will update reactively based on the buttonClicks state variable. -->
-	<p>You have clicked the button <span class="text-red-500">{buttonClicks}</span> {timeOrTimes}.</p>
+<div
+	class="container mx-auto grid h-full w-full grid-cols-1 items-center justify-items-center gap-8 px-4"
+>
+	<Card footerBase="flex gap-x-4 p-8">
+		{#snippet header()}
+			<img src="/header.jpg" class="aspect-[21/9] w-full hue-rotate-90" alt="banner" />
+		{/snippet}
+		{#snippet article()}
+			<div>
+				<h3 class="h3">Welcome!</h3>
+			</div>
+			<p class="opacity-60">
+				This website functions as a web portal to a database for the game '{$gameName}'.
+			</p>
+		{/snippet}
+	</Card>
 </div>
