@@ -18,9 +18,18 @@ By the end of this chapter, you will be able to:
 - Create a flexible Card component using Svelte snippets and Tailwind styling.
 
 ### Prerequisites
+- Basic understanding of Svelte and SvelteKit (as covered in the previous chapters).
+- Some familiarity with [Tailwind CSS](https://tailwindcss.com/).
+- Basic knowledge of [responsive design principles](https://www.interaction-design.org/literature/article/responsive-design-let-the-device-do-the-work).
 
 ### Learning Resources
-
+- [Lucide Svelte installation](https://lucide.dev/guide/installation#svelte)
+- [Lucide icons database](https://lucide.dev/icons)
+- [Skeleton installation](https://www.skeleton.dev/docs/get-started/installation/sveltekit)
+- [Skeleton themes](https://www.skeleton.dev/docs/design/themes)
+- [Responsive design with Tailwind](https://tailwindcss.com/docs/responsive-design)
+- [Dark mode with Tailwind](https://tailwindcss.com/docs/dark-mode)
+- [Theme variables with Tailwind](https://tailwindcss.com/docs/theme)
 
 ## Lucide
 
