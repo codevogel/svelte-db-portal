@@ -220,10 +220,12 @@ Refer to the [Node.js installation guide](https://nodejs.org/en/download) for th
 
 With Git and Node.js set up, we now need to install XAMPP (or more accurately, LAMPP, which is the Linux version of XAMPP).
 
-- XAMPP is a free and open-source cross-platform web server solution stack package developed by Apache Friends, consisting mainly of the Apache HTTP Server, MariaDB (or MySQL), and interpreters for scripts written in the PHP and Perl programming languages.
+XAMPP is a free and open-source cross-platform web server solution stack package developed by Apache Friends, consisting mainly of the Apache HTTP Server, MariaDB (or MySQL), and interpreters for scripts written in the PHP and Perl programming languages.
 
 We will use XAMPP to run a local MySQL database, and view and alter our database using a GUI tool called phpMyAdmin. 
 Note that technically, you could use any MySQL server for this project, but XAMPP is a popular choice for beginners, as it is easy to set up and use.
+
+> ℹ️ For those that want to be in the know: Technically, we'll be installing MariaDB, which is not exactly the same as MySQL, but it functions as a drop-in replacement for MySQL, so we'll refer to it as MySQL throughout this tutorial for simplicity and familiarity, just like XAMPP does.
 
 To install XAMPP, download the latest version for Linux from the [Apache Friends website](https://www.apachefriends.org/).
 
@@ -234,7 +236,6 @@ mv /mnt/c/Users/MyUsername/Downloads/xampp-linux-*installer.run ~/Downloads/
 # Note that if you have spaces in your path (such as in the username), you need to wrap the path in quotes, or escape them with a backslash (\).
 # Autocompleting the path using tab is handy here.
 ```
-
 
 Now that we have download the installer, we need to run it. But to do that, we first need to alter the file permissions so we are allowed to run it. We can do this using `chmod`:
 
