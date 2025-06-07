@@ -22,19 +22,22 @@ async function reseed_db() {
 	await reset(db, schema);
 	// Seed the database with test data
 	console.log('Reseeding database...');
-	const seedSchema = {
-		users: schema.users,
-		userProfiles: schema.userProfiles,
-		usersRelations: schema.usersRelations,
-		userProfilesRelations: schema.userProfilesRelations
-	};
 
-	await seed(db, seedSchema).refine((f) => ({
+	await seed(db, schema).refine((f) => ({
 		users: {
-			count: 10,
+			count: 12,
 			with: {
-				userProfiles: 1
+				userProfiles: 1,
+				sessions: 5
 			}
+		},
+		sessions: {
+			with: {
+				scores: 5
+			}
+		},
+		levels: {
+			count: 5
 		}
 	}));
 
