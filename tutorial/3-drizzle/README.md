@@ -55,7 +55,7 @@ As the `sv` CLI has already installed Drizzle into our project during setup, let
 
 In `.env`, we want to update the `DATABASE_URL` to reflect the proper configuration. I'm using `root` (the default privileged MySQL user in XAMPP) as the `username` here (and optionally, a `password`), the `host` is `localhost`, on port `3306` (default port for the SQL database provided in XAMPP), and we point at a database `db-demobots` (that we have yet to create!). If you've messed around with the usernames, ports and/or passwords, fill those in instead. 
 
-> ℹ️ We won't be going live with this database, but it might be best practice to secure it using a password anyway. You can do so by running a query in the MySQL server (launch it by running /opt/lampp/bin/mysql): `SET PASSWORD FOR 'root'@'localhost' = PASSWORD('my_very_secretive_password'); FLUSH PRIVILEGES;`. Be sure to update your `mysql` and `phpmyadmin` credentials by editing `/opt/lampp/etc/my.cnf` (needs sudo access) and `/opt/lampp/phpmyadmin/config.inc.php` respectively. Don't forget to restart the XAMPP server (`sudo /opt/lampp/lampp restart`) afterwards. Should you ever run into issues, you can always attempt to [reset the password](https://dev.mysql.com/doc/refman/8.4/en/resetting-permissions.html).
+> ℹ️ We won't be going live with this database, but it might be best practice to secure it using a password anyway. You can do so by running a query in the MySQL server (launch it by running /opt/lampp/bin/mysql): `SET PASSWORD FOR 'root'@'localhost' = PASSWORD('my_very_secretive_password'); FLUSH PRIVILEGES;`. Be sure to update your `mysql` and `phpMyAdmin` credentials by editing `/opt/lampp/etc/my.cnf` (needs sudo access) and `/opt/lampp/phpmyadmin/config.inc.php` respectively. Don't forget to restart the XAMPP server (`sudo /opt/lampp/lampp restart`) afterwards. Should you ever run into issues, you can always attempt to [reset the password](https://dev.mysql.com/doc/refman/8.4/en/resetting-permissions.html).
 
 Following above instructions, your `.env` file should look something like this:
 
@@ -116,16 +116,16 @@ We don't need to change anything in this file, but it's good to know what it doe
 Now that we have our Drizzle configuration set up, before we start defining our database schema, we need to create the database itself.
 
 This is as simple as visiting `[http://localhost/phpmyadmin](http://localhost/phpmyadmin)` in your browser, which should log you in automatically using the credentials we provided in the `/opt/lampp/phpmyadmin/config.inc.php` file.
-
 Once at the landing page, click on the "Databases" tab at the top, and then in the "Create database" field, enter `db-demobots` (or whatever name you set up earlier in your `.env` file), and click the "Create" button.
 
 We won't be doing anything else in phpMyAdmin for now, as we will be using Drizzle (`drizzle-seed` to be exact) to set up our database schema and seed our database with some test data.
 
-### Defining a simple database schema
+
+## Definining the database schema 
 
 > ℹ️ If you already have an existing database with a schema that you want to use, you can skip this step and instead skip forward to the sub-section on "Pulling a schema from an existing database". However, once again, it is highly recommended to just follow along with the steps we're taking here to avoid any data loss while we're figuring Drizzle out.
 
-#### Simple table
+### Exploring the schema 
 
 Let's take a look at the `src/lib/server/db/schema.ts` file that was generated for us:
 
@@ -145,7 +145,21 @@ It imports the necessary functions from the `drizzle-orm/mysql-core` package to 
 
 > ℹ️ Even though present in the default schema, the SQL Database we've installed along with XAMPP (MariaDB) does not support the `serial` type directly. We will change this in the next step, but keep this in mind, as you might run into similar column type errors pushing your schema to the database.
 
-Let's expand our database with a simple user table that contains some more information about the users. Looking at the [column types](https://orm.drizzle.team/docs/column-types/mysql) that Drizzle supports, we'll add the following columns to our `user` table:
+### Altering the schema 
+
+#### Users Table
+
+Let's expand our database with a simple user table that contains some more information about the users. Looking at the [column types](https://orm.drizzle.team/docs/column-types/mysql) that Drizzle supports, let's create a `user` table that contains the following columns:
+
+| Column Name | Data Type | Constraints |
+| `username` | `varchar(20)` | UNIQUE, NOT NULL |
+|-------------|-----------|-------------|
+| `id` | `int` | PRIMARY KEY, AUTO_INCREMENT |
+| `created_at` | `datetime` | NOT NULL |
+| `date_of_birth` | `date` | NOT NULL |
+
+##### Implementation
+
 We'll add the following columns to the `user` table.
 
 ```typescript
@@ -162,24 +176,14 @@ export const userTable = mysqlTable('user', {
 });
 ```
 
-We've now defined a `user` table that contains the following columns:
-- `id`: an auto-incrementing primary key of type `int`.
-- `createdAt`: a `datetime` column that stores the date and time when the user was created.
-- `firstName`: a `varchar` column that stores the user's first name, with a maximum length of 30 characters.
-- `lastName`: a `varchar` column that stores the user's last name, with a maximum length of 30 characters.
-- `username`: a `varchar` column that stores the user's username, with a maximum length of 20 characters.
-- `dateOfBirth`: a `date` column that stores the user's date of birth.
-
-Furthermore, we've ensured that none of the columns can be `null` by using the `.notNull()` method.
-
 Now we want to have Drizzle create this table in our database.
 So let's try pushing this schema to our database.
 
-#### Pushing a schema
+### Pushing a schema
+To do this, we can use the `drizzle-kit` CLI tool that was installed as part of the Drizzle setup. We can run it with `npx`:
 
 [Pushing a schema](https://orm.drizzle.team/docs/drizzle-kit-push) to the database is the act of altering the database to match the schema defined in our code.
 
-To do this, we can use the `drizzle-kit` CLI tool that was installed as part of the Drizzle setup. We can run it with `npx`:
 
 ```bash
 npx drizzle-kit push
@@ -192,10 +196,10 @@ We will be met with a message showing the SQL statement that was generated to ad
 > ⚠️ If you push to a database that already has tables, Drizzle will attempt to *alter* the existing tables to match the schema defined in your code. This can however cause some issues with data loss. For simplicity during this course, just *drop* all the tables in your dummy database before pushing the schema, so that Drizzle can create the tables from scratch, and then seed the database (see next section) to repopulate the tables with data. 
 
 Let's go over to [`http://localhost/phpmyadmin/`](http://localhost/phpmyadmin/), open up the `db-demobots` database, and then click on the `user` table to see the structure of the table we just created:
+#### Pulling a schema
 ![[created-user-table.png]]
 
 Looks good! We'll create some more interesting tables that share relations later, but for now, let's try and do the reverse: let's pull a schema from an existing database instead.
-#### Pulling a schema
 
 [Pulling a schema](https://orm.drizzle.team/docs/drizzle-kit-pull) is the opposite of pushing a schema. It takes a look at an existing database and generates a Drizzle schema file that matches the structure of the database.
 If you already have an existing database with a schema that you want to use, you can use `drizzle-kit` to pull the schema from the database and generate the corresponding Drizzle schema file.
@@ -215,7 +219,8 @@ We won't be using this feature too much, so you can go ahead and delete the crea
 > ℹ️ If you had an existing database with a schema that you wanted to use, it is still a good recommendation to create a new dummy database and run through the steps of defining the schema from scratch, as it will help you understand how Drizzle works and how to define your own schema in the future, and since we'll be dropping tables instead of migrating between changes, you will lose data in your real database.
 
 Now that we know how to push and pull our schema, let's move on to seeding our database with some initial data.
-#### Seeding the database
+
+### Seeding the database
 
 To be able to test our application, we need some initial data in our database. Now we *could* painstakingly write SQL queries to manually insert data into our database, or use PHPMyAdmin to do so, but Drizzle offers a much simpler way to seed our database with some realistic data using `drizzle-seed`.
 
@@ -300,7 +305,7 @@ Cool. This will save us a lot of time doing data-entry by hand, and ensures that
 
 Remember, an ORM stands for Object *Relational* Mapper, but right now, we only really have a single table with some Objects in it. We can do better than that: we can create tables that share relations with each other, allowing us to model more complex data structures.
 
-### Soft Relations vs Foreign Keys
+#### Soft Relations vs Foreign Keys
 
 Before we dive into implementing relations in Drizzle, let's clarify the difference between **relations** and **foreign keys**.
 - **Foreign keys** are a database-level constraint that allows us to link two tables together. A foreign key is a column in one table that references the primary key of another table. This creates a relationship between the two tables, allowing us to join them together in queries. Foreign key constraints make sure that when inserting/updating/deleting data, the data remains consistent and valid across the tables. For example, if we have a `user_profiles` table that references the `users` table, we can ensure that every profile belongs to a valid user.
@@ -310,9 +315,22 @@ Before we dive into implementing relations in Drizzle, let's clarify the differe
 It's okay to be a bit confused by this at first, we just wanted to clarify the difference between the two before we start thinking of them as interchangeable.
 For now, let's just take a look at a simple relationship between two tables: the One-to-One relationship.
 
-### One-to-one
+#### One-to-one
 
-[One to One relationships](https://orm.drizzle.team/docs/relations#one-to-one) are the simplest type of relationship, where one record in a table is related to one record in another table. For example, we could have a `profile` table that contains additional information about a user, rather than storing less crucial data it in the `user` table itself:
+[One to One relationships](https://orm.drizzle.team/docs/relations#one-to-one) are the simplest type of relationship, where one record in a table is related to one record in another table. For example, we could have a `profile` table that contains additional information about a user, rather than storing less crucial data it in the `user` table itself.
+
+Let's set up a `user_profiles` table that holds additional information about the user, with the following format:
+
+##### User Profiles Table
+| Column Name | Data Type | Constraints |
+|-------------|-----------|-------------|
+| `id` | `int` | PRIMARY KEY, AUTO_INCREMENT |
+| `user_id` | `int` | FOREIGN KEY → users(id), NOT NULL |
+| `first_name` | `varchar(30)` | NOT NULL |
+| `last_name` | `varchar(30)` | NOT NULL |
+| `title` | `varchar(30)` | NOT NULL |
+
+###### Implementation
 
 ```typescript
 // /src/lib/db/schema.ts
@@ -331,10 +349,10 @@ export const users = mysqlTable('users', {
 // Holds user profile information.
 export const userProfiles = mysqlTable('user_profiles', {
 	id: int('id').primaryKey().autoincrement(),
-	userId: int('user_id').references(() => users.id),
+	userId: int('user_id').references(() => users.id).notNull(),
 	firstName: varchar('first_name', { length: 30 }).notNull(),
 	lastName: varchar('last_name', { length: 30 }).notNull(),
-	title: varchar('title', { length: 255 }).notNull()
+	title: varchar('title', { length: 30 }).notNull()
 });
 
 // One user has one profile.
@@ -359,7 +377,7 @@ Now we have two tables: `users` and `user_profiles`. One user can have one profi
 	- `userId`: a foreign key that references the `id` column in the `users` table. More on foreign keys later.
 	- `firstName`: a `varchar` column that stores the user's first name, with a maximum length of 30 characters.
 	- `lastName`: a `varchar` column that stores the user's last name, with a maximum length of 30 characters.
-	- `title`: a `varchar` column that stores the user's title (e.g. their job title), with a maximum length of 50 characters.
+	- `title`: a `varchar` column that stores the user's title (e.g. their job title), with a maximum length of 30 characters.
 
 We also define the **relations** between the two tables using the `relations` function from Drizzle. This allows us to easily query the related data later on.
 
@@ -367,34 +385,309 @@ Let's drop the existing `user` tables in our database using PHPMyAdmin (click th
 
 ![[two-tables.png]]
 
-#### Refining seeding for relations
 
-What's cool is that `drizzle-seed` allows us to now refine our seeding script so every user will have exactly one profile.
+#### One-to-many
+
+[One to Many relationships](https://orm.drizzle.team/docs/relations#one-to-many) are a type of relationship where one record in a table is related to multiple records in another table. For example, we could have a `sessions` table that contains data about the user's training sessions in our game, where one user can have multiple sessions, but each session belongs to one user.
+
+##### Sessions table
+
+Let's set up a `sessions` table that holds information about the user's training session, with the following format:
+
+| Column Name | Data Type | Constraints |
+|-------------|-----------|-------------|
+| `id` | `int` | PRIMARY KEY, AUTO_INCREMENT |
+| `user_id` | `int` | FOREIGN KEY → users(id), NOT NULL |
+| `created_at` | `datetime` | NOT NULL |
+| `duration` | `int` | NOT NULL |
+
+###### Implementation
+
+We'll implement it as follows:
+
+```typescript
+// Holds information about user sessions
+export const sessions = mysqlTable('sessions', {
+	id: int('id').primaryKey().autoincrement(),
+	userId: int('user_id').references(() => users.id).notNull(),
+	createdAt: datetime('created_at').notNull(),
+	duration: int('duration').notNull() // in seconds
+});
+
+// Define relations from the sessions table
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+	// One session belongs to one user.
+	user: one(users, {
+		fields: [sessions.userId],
+		references: [users.id]
+	})
+}));
+```
+
+## Finishing up the schema
+
+Now that we understand how to create new tables and define relations between them, let's finish up our schema by adding a few more tables that will help us model the data for our serious game database.
+
+### Score Table
+
+This table keeps track of the scores that a user achieves. Each score is associated with a specific training session, and is achieved on a specific level of the game.
+
+This table will hold the following columns:
+| Column Name | Data Type | Constraints |
+|-------------|-----------|-------------|
+| `id` | `int` | PRIMARY KEY, AUTO_INCREMENT |
+| `session_id` | `int` | FOREIGN KEY → sessions(id), NOT NULL |
+| `level_id` | `int` | FOREIGN KEY → levels(id), NOT NULL |
+
+#### Implementation
+
+We will implement the `scores` table as follows:
+
+```typescript
+// Holds scores for each session and level
+export const scores = mysqlTable('scores', {
+	id: int('id').primaryKey().autoincrement(),
+	sessionId: int('session_id').references(() => sessions.id).notNull(),
+	levelId: int('level_id').references(() => levels.id).notNull(),
+	createdAt: datetime('created_at').notNull(),
+	score: int('score').notNull(),
+	timeTaken: int('time_taken').notNull(), 
+	accuracy: float('accuracy').notNull()
+});
+```
+
+And we update the `sessionsRelations` and add the `scoresRelations`:
+
+```typescript
+// Define relations from the sessions table
+export const sessionsRelations = relations(sessions, ({ one, many }) => ({
+    ...,
+    scores: many(scores) // One session can have many scores.
+}));
+
+// Define relations from the score table
+export const scoresRelations = relations(scores, ({ one }) => ({
+	// One score belongs to one session.
+	session: one(sessions, {
+		fields: [scores.sessionId],
+		references: [sessions.id]
+	})
+}));
+```
+
+### Level Table
+
+This table holds information about the different levels in the game. Each level has a unique ID and a name.
+
+This table will hold the following columns:
+
+| Column Name | Data Type | Constraints |
+|-------------|-----------|-------------|
+| `id` | `int` | PRIMARY KEY, AUTO_INCREMENT |
+| `name` | `varchar(50)` | NOT NULL |
+| `difficulty` | `int` | NOT NULL |
+
+#### Implementation
+
+We will implement the `levels` table as follows:
+
+```typescript
+// Holds information about the levels in the game
+export const levels = mysqlTable('levels', {
+	id: int('id').primaryKey().autoincrement(),
+	name: varchar('name', { length: 50 }).notNull(),
+	difficulty: int('difficulty').notNull()
+});
+```
+
+And we'll update the `scoresRelations` and add the `levelsRelations`:
+
+```typescript
+// Define relations from the score table
+export const scoresRelations = relations(scores, ({ one }) => ({
+    ...	
+	// One score belongs to one level.
+	level: one(levels, {
+		fields: [scores.levelId],
+		references: [levels.id]
+	})
+}));
+
+// Holds information about the levels in the game
+export const levelsRelations = relations(levels, ({ many }) => ({
+	// One level can have many scores.
+	scores: many(scores)
+}));
+```
+
+### Final Schema
+
+The final (for now) schema we ended up with during this modifications should look like this:
+
+```typescript
+// /src/lib/db/schema.ts
+
+import { mysqlTable, date, datetime, varchar, int, float } from 'drizzle-orm/mysql-core';
+import { relations } from 'drizzle-orm';
+
+// Holds user information.
+export const users = mysqlTable('users', {
+	id: int('id').primaryKey().autoincrement(),
+	createdAt: datetime('created_at').notNull(),
+	username: varchar('username', { length: 20 }).unique().notNull(),
+	dateOfBirth: date('date_of_birth').notNull()
+});
+
+// Holds user profile information.
+export const userProfiles = mysqlTable('user_profiles', {
+	id: int('id').primaryKey().autoincrement(),
+	userId: int('user_id').references(() => users.id).notNull(),
+	firstName: varchar('first_name', { length: 30 }).notNull(),
+	lastName: varchar('last_name', { length: 30 }).notNull(),
+	title: varchar('title', { length: 30 }).notNull()
+});
+
+// Holds information about user sessions
+export const sessions = mysqlTable('sessions', {
+	id: int('id').primaryKey().autoincrement(),
+	userId: int('user_id').references(() => users.id).notNull(),
+	createdAt: datetime('created_at').notNull(),
+	duration: int('duration').notNull() // in seconds
+});
+
+// Holds scores for each session and level
+export const scores = mysqlTable('scores', {
+	id: int('id').primaryKey().autoincrement(),
+	sessionId: int('session_id').references(() => sessions.id).notNull(),
+	levelId: int('level_id').references(() => levels.id).notNull(),
+	createdAt: datetime('created_at').notNull(),
+	score: int('score').notNull(),
+	timeTaken: int('time_taken').notNull(), 
+	accuracy: float('accuracy').notNull()
+});
+
+export const levels = mysqlTable('levels', {
+	id: int('id').primaryKey().autoincrement(),
+	name: varchar('name', { length: 50 }).notNull(),
+	difficulty: int('difficulty').notNull()
+});
+
+// Define relations from the users table
+export const usersRelations = relations(users, ({ one, many }) => ({
+	// One user has one profile.
+	profile: one(userProfiles),
+	// One user can have many sessions.
+	sessions: many(sessions)
+}));
+
+// Define relations from the userProfiles table
+export const userProfilesRelations = relations(userProfiles, ({ one }) => ({
+	// One user profile belongs to one user.
+	user: one(users, {
+		fields: [userProfiles.userId],
+		references: [users.id]
+	})
+}));
+
+// Define relations from the sessions table
+export const sessionsRelations = relations(sessions, ({ one, many }) => ({
+	// One session belongs to one user.
+	user: one(users, {
+		fields: [sessions.userId],
+		references: [users.id]
+	}),
+	scores: many(scores) // One session can have many scores.
+}));
+
+// Define relations from the score table
+export const scoresRelations = relations(scores, ({ one }) => ({
+	// One score belongs to one session.
+	session: one(sessions, {
+		fields: [scores.sessionId],
+		references: [sessions.id]
+	}),
+	// One score belongs to one level.
+	level: one(levels, {
+		fields: [scores.levelId],
+		references: [levels.id]
+	})
+}));
+
+// Holds information about the levels in the game
+export const levelsRelations = relations(levels, ({ many }) => ({
+	// One level can have many scores.
+	scores: many(scores)
+}));
+```
+
+## Seeding refinements
+
+Now that we have a more complex schema, where tables actually share relations, we should update our seeding script to generate more realistic data that adheres to the schema we've defined.
+
+### Relation-aware seeding
+
+Drizzle's `drizzle-seed` library handles relations pretty well. We just need to give it some hints on how to generate the data.
+We can do so by using the `refine` method. 
+
+Let's update our `scripts/reseed.ts` file to use the `refine` method:
 
 ```typescript
 // /scripts/reseed.ts
-
 ...
-// Seed the database with test data
-console.log('Reseeding database...');
-const seedSchema = {
-    users: schema.users,
-    userProfiles: schema.userProfiles,
-    usersRelations: schema.usersRelations,
-    userProfilesRelations: schema.userProfilesRelations
-};
 
-await seed(db, seedSchema).refine((f) => ({
+await seed(db, schema).refine((f) => ({
     users: {
-        count: 10,
+        count: 12,
         with: {
-            userProfiles: 1
+            userProfiles: 1,
+            sessions: 5
         }
+    },
+    sessions: {
+        with: {
+            scores: 5
+        }
+    },
+    levels: {
+        count: 5
     }
 }));
+
 ...
 ```
 
-Now when seeding, each database user will have exactly one profile, and the userProfiles' `userId` column will be populated with a real user ID from the `users` table.
+This will generate 12 users, each with 1 profile and 5 sessions.
+Each session will have five scores, and the `levels` table will be populated with five levels.
 
+Because we pass the `schema` to the `seed` function, Drizzle is aware of the relations between our tables, and will generate the data accordingly.
+
+Thusly, we will end up with a database that has:
+- 12 users
+    - Each user has 1 profiles
+    - Each user has 5 sessions
+- 12 user profiles
+- 60 sessions
+    - Each session has 5 scores
+- 300 scores
+- 5 levels
+
+Let's check it out in `phpMyAdmin`:
+
+![[refinement-overview.png]]
+
+Those row counts look right!
+Looking at the `sessions` table, we can also see each `user_id` shows up five times, and each `user_id` is valid:
+
+![[sessions-overview.png]]
+
+And looking at the `scores` table, we can see that each `session_id` shows up five times, and each `level_id` is valid:
+
+![[scores-overview.png]]
+
+This is great!
+You may have noticed some odd values for our test data though. The `duration` column in the `sessions` table is sometimes negative, and the numbers are huge. That doesn't look very sensible when we're considering that the `duration` is in seconds, and a realistic session shouldn't last longer than a few hours at most.
+
+Luckily, we have more options to refine the data that is generated. Let's look at some of those other options.
+
+### Minimum and maximum values
 
