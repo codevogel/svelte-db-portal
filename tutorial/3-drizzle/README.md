@@ -5,19 +5,31 @@ Now that we have a basic website up and running, we can start adding some data t
 ## Chapter Overview
 
 ### Learning goals
+
 At the end of this chapter, you will:
-- Understand what an ORM is and how it can simplify database interactions.
-- Be able to set up Drizzle ORM with a MySQL database.
-- Know how to define a database schema using Drizzle.
-- Be able to seed your database with initial data using drizzle-seed.
-- Understand how to create a Data Access Object (DAO) to handle database queries.
-- Be able to load data in Svelte using server-side load functions.
-- Know how to use the `$props` rune to access data in Svelte components.
+- Understand what ORMs are and why they're beneficial for database interactions
+- Configure Drizzle ORM in your SvelteKit project and set up MySQL database connections
+- Define database schemas using Drizzle's TypeScript syntax
+- Use Drizzle Kit to push schemas to your database and pull existing schemas
+- Build complex relational database structures by implementing one-to-one and one-to-many relationships
+- Generate realistic test data using drizzle-seed's built-in generators and refinement options
+- Enhance seeded data with Faker.js for more sophisticated data generation scenarios
+- Write basic queries to retrieve and manipulate data using Drizzle ORM 
 
 ### Prerequisites
 - Basic understanding of SQL and relational databases.
 
 ### Learning resources
+
+- [Drizzle ORM Official Documentation](https://orm.drizzle.team/) - Comprehensive guide covering all features
+- [Drizzle MySQL Column Types](https://orm.drizzle.team/docs/column-types/mysql) - Reference for all available column types
+- [Migrations with Drizzle Kit](https://orm.drizzle.team/docs/kit-overview) - CLI tools for schema management
+- [Drizzle Seed Documentation](https://orm.drizzle.team/docs/seed-overview) - Guide to generating test data
+- [Drizzle Seed Functions Reference](https://orm.drizzle.team/docs/seed-functions) - Built-in data generators
+- [Faker.js Documentation](https://fakerjs.dev/) - Library for generating realistic fake data
+- [Database Relationships Explained](https://www.lucidchart.com/pages/database-diagram/database-design) - Visual guide to database design
+- [Foreign Keys vs Soft Relations](https://orm.drizzle.team/docs/relations#foreign-keys) - Understanding different relationship approaches
+- [Environment Variables in SvelteKit](https://kit.svelte.dev/docs/modules#$env-dynamic-private) - Secure configuration management
 
 ## Introduction to ORMs
 
@@ -624,6 +636,8 @@ export const levelsRelations = relations(levels, ({ many }) => ({
 
 Now that we have a more complex schema, where tables actually share relations, we should update our seeding script to generate more realistic data that adheres to the schema we've defined.
 
+> ℹ️ Please do follow along with the code snippets below, as they will help you understand how to refine the generated data to better suit your needs. However, keep in mind that you should not overly complicate the seeding script for your own database. Just focus on the most important aspects of the data that need to be 'realistic' for your application. In our case, we want to show some realistic data in graphs, so we need to ensure that the dates, durations, and scores are all within a reasonable range.
+
 ### Relation-aware seeding
 
 Drizzle's `drizzle-seed` library handles relations pretty well. We just need to give it some hints on how to generate the data.
@@ -689,5 +703,296 @@ You may have noticed some odd values for our test data though. The `duration` co
 
 Luckily, we have more options to refine the data that is generated. Let's look at some of those other options.
 
-### Minimum and maximum values
+### Generator functions
 
+You may have wonered what the `f` parameter is in the `refine` method. We can use it to generate more realistic data by using the various [generator functions](https://orm.drizzle.team/docs/seed-functions) that Drizzle provides.
+
+Let's apply some of these functions to our seeding script. We'll go over them below.
+
+```typescript
+// /scripts/reseed.ts
+
+...
+await seed(db, schema).refine((f) => ({
+	users: {
+		count: 12,
+		columns: {
+			createdAt: f.date({ minDate: '2025-01-01', maxDate: '2025-02-01' }),
+			dateOfBirth: f.date({ minDate: '1995-01-01', maxDate: '2005-12-31' })
+		},
+		with: {
+			userProfiles: 1,
+			sessions: 5
+		}
+	},
+	userProfiles: {
+		columns: {
+			firstName: f.firstName(),
+			lastName: f.lastName({ isUnique: true }),
+			title: f.valuesFromArray({
+				values: ['Intern', 'Junior', 'Senior']
+			})
+		}
+	},
+	sessions: {
+		columns: {
+			// Between 30 minutes and 4 hours
+			duration: f.number({ minValue: 60 * 30, maxValue: 60 * 60 * 4 })
+		},
+		with: {
+			scores: 5
+		}
+	},
+	levels: {
+		count: 5
+	},
+	scores: {
+		columns: {
+			score: f.number({ minValue: 0, maxValue: 5000 }),
+			// Between 1 minute and 12 hours
+			timeTaken: f.number({ minValue: 60, maxValue: 60 * 12 }),
+			// Between 0 and 1 with 2 decimal places
+			accuracy: f.number({ minValue: 0, maxValue: 1, precision: 100 })
+		}
+	}
+}));
+...
+```
+
+In this updated seeding script, we use the following generator functions:
+- `f.date({ minDate, maxDate })`: Generates a random date between the specified minimum and maximum dates. We use this to generate a realistic date of birth for the users.
+- `f.firstName()`: Generates a random first name for the user profile.
+- `f.lastName({ isUnique: true })`: Generates a random last name for the user profile, ensuring that the last names are unique.
+- `f.valuesFromArray({ values })`: Generates a random value from the specified array. We use this to generate a random title for the user profile.
+- `f.number({ minValue, maxValue })`: Generates a random number between the specified minimum and maximum values. We use this to generate a realistic duration for the sessions, a score for the scores, and a time taken for the scores.
+- `f.number({ minValue, maxValue, precision })`: Generates a random number between the specified minimum and maximum values, with the specified precision. We use this to generate a realistic accuracy for the scores.
+
+You can find more generator functions in the [Drizzle documentation](https://orm.drizzle.team/docs/seed-functions), should you need them.
+
+Though the data is now more realistic, we still have a couple of ways to improve our data further. For example, we should ensure that the `created_at` column in the `score` table is set after the `created_at` column in the `sessions` table. Otherwise we'll be creating scores that didn't happen in a session, which doesn't make sense.
+
+To make these changes, we should be generating data that depends on other data. `drizzle-seed` isn't too good at that. So we will instead need to do some manual seeding of the data, which we'll cover in the next section.
+
+### Manual seeding
+
+As mentioned above, some of our data needs to be generated in a rigid way, and some of our data depends on other data. For example, we want to ensure that the `levels` difficulty gradually increases, and that the `created_at` column in the `scores` table is achieved within the timespan of the session it belongs to.
+
+As `drizzle-seed` doesn't support this out of the box, we will need to manually insert some of the data. For some cases, we will have to query the dependent data first, and then use that data to generate the dependent data.
+
+We'll be using [Faker.js](https://fakerjs.dev/) to help fill in the gaps where `drizzle-seed` isn't able to generate the data we need.
+
+#### Faker.js
+
+Faker.js is a popular library for generating fake data, and we can use it in conjunction with `drizzle-seed`. 
+
+To use Faker.js, we first need to [install it](https://fakerjs.dev/guide/) as a dev dependency:
+
+```bash
+npm install @faker-js/faker --save-dev
+```
+
+Now we can import it in our seeding script and use it to generate the data we need.
+To ensure that `faker` generates reproducible data, we can set a seed manually:
+
+```typescript
+// /scripts/reseed.ts
+
+import { faker } from '@faker-js/faker';
+
+// Function to reseed the database
+async function reseed_db() {
+	...
+	// Create a MySQL client and initialize Drizzle ORM
+	const client = mysql.createPool(process.env.DATABASE_URL);
+	const db = drizzle(client, { schema, mode: 'default' });
+	faker.seed(1234);
+	...
+}
+```
+
+Look at the [usage guide](https://fakerjs.dev/guide/usage.html) and [API reference](https://fakerjs.dev/api/) to see what Faker.js can do for us.
+
+#### Updating manually
+
+Let's start off simple. We just want to manually [update](https://orm.drizzle.team/docs/update) the `name` and `difficulty` of the created `levels` table, as they are rather nonsensical right now:
+
+![[pre-level-patch.png]]
+
+This gives us a good opportunity to write our first query that updates data in the database using Drizzle. 
+Below the `seed` function we add:
+
+```typescript
+// /scripts/reseed.ts
+
+async function reseed_db() {
+	...
+	await seed(db, schema).refine(...);
+
+	// We add this function call after the seeding process
+	await updateLevels(db);
+	...
+}
+```
+
+And then we implement the `updateLevels` function:
+
+```typescript
+// Updates the levels table with sequential names and difficulties 
+async function updateLevels(db: MySql2Database<typeof schema>) {
+	// We define an array of levels with their names and difficulties
+	const levels = [
+		{ name: 'Beginner', difficulty: 1 },
+		{ name: 'Intermediate', difficulty: 2 },
+		{ name: 'Advanced', difficulty: 3 },
+		{ name: 'Expert', difficulty: 4 },
+		{ name: 'Master', difficulty: 5 }
+	];
+
+	// For each level, update the name and difficulty
+	for (let i = 0; i < levels.length; i++) {
+		// We call the update method on the db object, passing in the schema.levels table
+		await db.update(schema.levels)
+			// We set the name and difficulty columns to the values from the levels array
+			.set({
+				name: levels[i].name,
+				difficulty: i + 1
+			})
+			// We use the eq function to specify which row to update, based on the id column
+			.where(eq(schema.levels.id, i + 1));
+	}
+}
+```
+
+Executing the seed script, we have fixed the level table:
+
+![[post-level-patch.png]]
+
+That looks much better! 
+Now let's move on to something a little more complex.
+
+#### Selecting and updating using a Faker function 
+
+Similarly to how we updated the levels table, we can use a Faker.js function to generate random internet-like usernames for each user in the `users` table.
+
+We first [select](https://orm.drizzle.team/docs/select#basic-select) the users from the `users` table, and then for each user, we will generate a random username using Faker.js and update the `username` column in the `users` table where the `id` matches the user's id. 
+
+```typescript
+// Sets random internet usernames for each user
+async function updateUsernames(db: MySql2Database<typeof schema>) {
+	const users = await db.select().from(schema.users);
+	for (const user of users) {
+		await db
+			.update(schema.users)
+			.set({
+				username: faker.internet.username().slice(0, 20)
+			})
+			.where(eq(schema.users.id, user.id));
+	}
+}
+```
+
+#### Generating data that depends on other data 
+
+One of the issues with our current seeding script is that the `sessions` table might end up with sessions that were created before the user account was created, due to the random nature of the seeding process.
+
+So, let's correct this by manually updating the `created_at` column in the `sessions` table to ensure that they're always sequentially created after the user account was created.
+
+For this, we first have to [select](https://orm.drizzle.team/docs/select#basic-select) the users from the `users` table, and then for each user, we will select their sessions and update the `created_at` column based on some random, sequential offset from the user's `created_at` date:
+
+```typescript
+
+// Adjusts the created_at column in the sessions table to ensure that sessions are created after the user account was created
+async function adjustSessionCreatedAt(db: MySql2Database<typeof schema>) {
+	// Query the created users
+	const createdUsers = await db.select().from(schema.users);
+
+	// For each user...
+	for (const user of createdUsers) {
+		// Find their sessions
+		const userSessions = await db.query.sessions.findMany({
+			where: (sessions, { eq }) => eq(sessions.userId, user.id)
+		});
+
+		// Offset the sessions for that user
+		let currentCreatedAt = user.createdAt;
+		for (const session of userSessions) {
+			// Offset the createdAt by a random amount of time (up to 48 hours)
+			const offset = faker.number.int({ min: 0, max: 60 * 60 * 48 * 1000 });
+			const newCreatedAt = new Date(currentCreatedAt.getTime() + offset);
+			// Update the session's createdAt
+			await db
+				.update(schema.sessions)
+				.set({ createdAt: newCreatedAt })
+				.where(eq(schema.sessions.id, session.id));
+			currentCreatedAt = newCreatedAt;
+		}
+	}
+}
+```
+
+Cool. Let's use another faker function to ensure that each score is created within the timespan of the session it belongs to.
+
+```typescript
+// Adjusts the created_at column in the scores table to ensure that scores are created in the timespan of the session
+async function adjustScoresCreatedAt(db: MySql2Database<typeof schema>) {
+	// Query all sessions
+	const sessions = await db.select().from(schema.sessions);
+
+	// For each session...
+	for (const session of sessions) {
+		// Calculate the session's start and end times
+		const sessionCreatedAt = session.createdAt;
+		const sessionEndedAt = new Date(sessionCreatedAt.getTime() + session.duration * 1000);
+
+		// Find all scores for that session
+		const scores = await db.query.scores.findMany({
+			where: eq(schema.scores.sessionId, session.id)
+		});
+
+		// For each score, set a random createdAt time within the session's timespan
+		for (const score of scores) {
+			const randomTime = faker.date.between({ from: sessionCreatedAt, to: sessionEndedAt });
+			await db
+				.update(schema.scores)
+				.set({ createdAt: randomTime })
+				.where(eq(schema.scores.id, score.id));
+		}
+	}
+}
+```
+
+Those are all the refinements we need to do for now.
+
+Again, remember to not go too overboard with overdoing these refinements, and focus on normalizing the data that is most important for your application.
+We mostly just wanted to show you how to refine the seeded data, and can always come back and refine the data later on.
+
+## Querying the database
+
+Now that we have some realistic, usable data to show in our application, we want to know how to query the database to retrieve this data.
+We've already written some basic queries in our seeding script, but now is a good time to read through the [Drizzle documentation](https://orm.drizzle.team/docs/select). (In our web portal, for the most part we aren't altering any data, just reading it, so we'll mostly be using `select` queries.)
+
+
+Most notably, we should know that there's two ways to query the database using Drizzle:
+
+- **Query Builder**: This is the most common way to query the database, where we use the `db.select()` method to build a query step by step. It mimics SQL syntax closely.
+- **Drizzle Queries:** This is what the `relations` we defined in our schema are used for. It allows us to query related data in a more intuitive way, using the `db.query` method. This is especially useful when we want to query data that has relations, such as users with their profiles or sessions.
+
+We can use either method to achieve the same result. Depending on the situation, one method might be more convenient than the other.
+
+In the next chapter, we'll be looking at implementing these queries in our SvelteKit application, so it's a good idea to familiarize yourself with the different query methods that Drizzle provides.
+
+## Wrapping up
+
+In this chapter, we've started understanding ORMs conceptually to building a fully functional, relationally-structured database for our SvelteKit application.
+
+We started by grasping why ORMs like Drizzle are valuable alternatives to raw SQL, then moved through the practical setup of connecting Drizzle to our MySQL database. From there, we built our database schema incrementally - beginning with a simple user table, then expanding to create meaningful relationships between users, profiles, sessions, scores, and levels. We learned to generate realistic test data efficiently, refining it to meet our specific needs, and finally explored how to query this data using Drizzle's flexible querying approaches.
+
+**What we've accomplished:**
+- Established a solid understanding of ORM benefits and Drizzle's TypeScript-first approach
+- Created a production-ready database configuration with proper environment variable management
+- Designed a relational database that accurately models a serious game's data requirements
+- Built an automated seeding system that generates consistent, realistic data for development and testing
+- Learned to query our database, readying us for data retrieval in our SvelteKit application 
+
+With our database foundation in place, we're now ready to bring this data to life in our SvelteKit application. In the next chapter, we'll learn how to safely integrate these database queries into our server-side routes, create dynamic pages that display user data, and build interactive components that visualizes raw information.
+Visit [Chapter 4](/tutorials/4-displaying-data/README.md) to continue.
