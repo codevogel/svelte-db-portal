@@ -15,9 +15,9 @@ export const users = mysqlTable('users', {
 export const userProfiles = mysqlTable('user_profiles', {
 	id: int('id').primaryKey().autoincrement(),
 	userId: int('user_id').references(() => users.id).notNull(),
-	firstName: varchar('first_name', { length: 30 }).notNull(),
-	lastName: varchar('last_name', { length: 30 }).notNull(),
-	title: varchar('title', { length: 30 }).notNull()
+	firstName: varchar('first_name', { length: 35 }).notNull(),
+	lastName: varchar('last_name', { length: 35 }).notNull(),
+	title: varchar('title', { length: 35 }).notNull()
 });
 
 // Holds information about user sessions
@@ -41,7 +41,7 @@ export const scores = mysqlTable('scores', {
 
 export const levels = mysqlTable('levels', {
 	id: int('id').primaryKey().autoincrement(),
-	name: varchar('name', { length: 50 }).notNull(),
+	name: varchar('name', { length: 35 }).notNull(),
 	difficulty: int('difficulty').notNull()
 });
 
