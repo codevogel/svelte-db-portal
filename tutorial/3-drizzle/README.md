@@ -338,9 +338,9 @@ Let's set up a `user_profiles` table that holds additional information about the
 |-------------|-----------|-------------|
 | `id` | `int` | PRIMARY KEY, AUTO_INCREMENT |
 | `user_id` | `int` | FOREIGN KEY → users(id), NOT NULL |
-| `first_name` | `varchar(30)` | NOT NULL |
-| `last_name` | `varchar(30)` | NOT NULL |
-| `title` | `varchar(30)` | NOT NULL |
+| `first_name` | `varchar(35)` | NOT NULL |
+| `last_name` | `varchar(35)` | NOT NULL |
+| `title` | `varchar(35)` | NOT NULL |
 
 ###### Implementation
 
@@ -362,9 +362,9 @@ export const users = mysqlTable('users', {
 export const userProfiles = mysqlTable('user_profiles', {
 	id: int('id').primaryKey().autoincrement(),
 	userId: int('user_id').references(() => users.id).notNull(),
-	firstName: varchar('first_name', { length: 30 }).notNull(),
-	lastName: varchar('last_name', { length: 30 }).notNull(),
-	title: varchar('title', { length: 30 }).notNull()
+	firstName: varchar('first_name', { length: 35 }).notNull(),
+	lastName: varchar('last_name', { length: 35 }).notNull(),
+	title: varchar('title', { length: 35 }).notNull()
 });
 
 // One user has one profile.
@@ -387,9 +387,9 @@ Now we have two tables: `users` and `user_profiles`. One user can have one profi
 - The `user_profiles` table is new, and contains:
 	- `id`: an auto-incrementing primary key of type `int`.
 	- `userId`: a foreign key that references the `id` column in the `users` table. More on foreign keys later.
-	- `firstName`: a `varchar` column that stores the user's first name, with a maximum length of 30 characters.
-	- `lastName`: a `varchar` column that stores the user's last name, with a maximum length of 30 characters.
-	- `title`: a `varchar` column that stores the user's title (e.g. their job title), with a maximum length of 30 characters.
+	- `firstName`: a `varchar` column that stores the user's first name, with a maximum length of 35 characters.
+	- `lastName`: a `varchar` column that stores the user's last name, with a maximum length of 35 characters.
+	- `title`: a `varchar` column that stores the user's title (e.g. their job title), with a maximum length of 35 characters.
 
 We also define the **relations** between the two tables using the `relations` function from Drizzle. This allows us to easily query the related data later on.
 
@@ -554,9 +554,9 @@ export const users = mysqlTable('users', {
 export const userProfiles = mysqlTable('user_profiles', {
 	id: int('id').primaryKey().autoincrement(),
 	userId: int('user_id').references(() => users.id).notNull(),
-	firstName: varchar('first_name', { length: 30 }).notNull(),
-	lastName: varchar('last_name', { length: 30 }).notNull(),
-	title: varchar('title', { length: 30 }).notNull()
+	firstName: varchar('first_name', { length: 35 }).notNull(),
+	lastName: varchar('last_name', { length: 35 }).notNull(),
+	title: varchar('title', { length: 35 }).notNull()
 });
 
 // Holds information about user sessions
@@ -970,7 +970,6 @@ We mostly just wanted to show you how to refine the seeded data, and can always 
 
 Now that we have some realistic, usable data to show in our application, we want to know how to query the database to retrieve this data.
 We've already written some basic queries in our seeding script, but now is a good time to read through the [Drizzle documentation](https://orm.drizzle.team/docs/select). (In our web portal, for the most part we aren't altering any data, just reading it, so we'll mostly be using `select` queries.)
-
 
 Most notably, we should know that there's two ways to query the database using Drizzle:
 
