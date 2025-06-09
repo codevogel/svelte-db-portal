@@ -91,3 +91,9 @@ export const levelsRelations = relations(levels, ({ many }) => ({
 	// One level can have many scores.
 	scores: many(scores)
 }));
+
+export type User = typeof users.$inferSelect;
+export type UserProfile = typeof userProfiles.$inferSelect;
+export type Session = typeof sessions.$inferSelect;
+export type Score = typeof scores.$inferSelect;
+export type Level = typeof levels.$inferSelect;
