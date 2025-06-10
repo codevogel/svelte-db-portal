@@ -994,4 +994,4 @@ We started by grasping why ORMs like Drizzle are valuable alternatives to raw SQ
 - Learned to query our database, readying us for data retrieval in our SvelteKit application 
 
 With our database foundation in place, we're now ready to bring this data to life in our SvelteKit application. In the next chapter, we'll learn how to safely integrate these database queries into our server-side routes, create dynamic pages that display user data, and build interactive components that visualizes raw information.
-Visit [Chapter 4](/tutorials/4-displaying-data/README.md) to continue.
+Visit [Chapter 4](/tutorials/4-load-and-display-data/README.md) to continue.
