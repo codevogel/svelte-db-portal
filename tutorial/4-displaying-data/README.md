@@ -1,2 +1,0 @@
-# 4 - Displaying data
-
