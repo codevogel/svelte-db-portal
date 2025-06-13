@@ -1,4 +1,47 @@
 <!-- /src/routes/dashboard/user/+page.svelte -->
 
-<h2 class="text-xl font-bold">User Page</h2>
-<p>This is the user page.</p>
+<script lang="ts">
+	import Card from '$lib/ui/views/Card.svelte';
+	import type { User } from '$lib/server/db/schema';
+
+	let { data } = $props();
+	let users: User[] | undefined = $derived(data.users);
+
+	function searchForUsersByName(event: Event & { currentTarget: EventTarget & HTMLInputElement }) {
+		event.currentTarget.form?.requestSubmit();
+	}
+</script>
+
+<div
+	class="mx-auto my-24 grid grid-cols-1 items-center gap-4 sm:my-48 lg:my-auto lg:grid-cols-[auto_1fr] lg:gap-8"
+>
+	<Card baseExtension="lg:min-w-md">
+		{#snippet header()}
+			<h1>Find a user</h1>
+		{/snippet}
+		{#snippet article()}
+			<form data-sveltekit-keepfocus>
+				<label for="username">Name: </label>
+				<input class="input" type="text" name="username" oninput={searchForUsersByName} />
+			</form>
+		{/snippet}
+	</Card>
+	{#if users && users.length > 0}
+		<Card baseExtension="lg:min-w-md">
+			{#snippet header()}
+				<h1>Found users</h1>
+			{/snippet}
+			{#snippet article()}
+				<div class="flex max-h-64 flex-col overflow-y-scroll">
+					{#each users as user (user.id)}
+						<a href="/dashboard/user/{user.id}">{user.username}</a>
+					{/each}
+				</div>
+			{/snippet}
+		</Card>
+	{:else}
+		<div class="flex flex-col items-center justify-center lg:min-w-md">
+			<p>Try searching for a user by name.</p>
+		</div>
+	{/if}
+</div>
