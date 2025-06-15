@@ -1,3 +1,5 @@
+// /src/lib/server/dao/ScoreDAO.ts
+
 import { DAO } from '$lib/server/dao/DAO';
 import {
 	users,
@@ -31,9 +33,9 @@ export class ScoreDAO extends DAO {
 			.as('max_scores');
 
 		// Then find the score records that match these maximums
-		const result = await DAO.db
+		return await DAO.db
 			// Select both user and score information ...
-			.select({ users, scores, sessions })
+			.select({ user: users, score: scores, session: sessions })
 			// ... from the users table...
 			.from(users)
 			// ... joined with the maximum scores subquery ...
@@ -49,13 +51,6 @@ export class ScoreDAO extends DAO {
 			.orderBy(desc(scores.score))
 			// ... and limit the results to the top 10 scorers.
 			.limit(limit);
-
-		// Map the results to the TopScorer type
-		return result.map((row) => ({
-			user: row.users,
-			score: row.scores,
-			session: row.sessions
-		}));
 	}
 }
 
