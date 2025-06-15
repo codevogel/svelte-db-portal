@@ -331,6 +331,69 @@ export const load: PageServerLoad = async ({ params }) => {
 
 Now, if we visit [`/dashboard/user/4`](http://localhost:5173/dashboard/user/4), we should see the username of the user with ID 4 displayed on the page instead.
 
+Let's do the same for the `/dashboard/session/[id]` route, which will display the details of a specific session. We will get into less detail here, as the code is mostly repetitive of what we did for the user route.
+
+First, we'll create the `SessionDAO`:
+
+```ts
+// /src/lib/server/dao/SessionDao.ts
+
+import { db } from '$lib/server/db';
+import { type Session, sessions } from '$lib/server/db/schema';
+import { eq } from 'drizzle-orm';
+
+export class SessionDAO {
+	static async getSessionById (id: number): Promise<Session | undefined> {
+		return await db.query.sessions.findFirst({
+			where: eq(sessions.id, id),
+		});
+
+	}
+}
+```
+
+Next, we'll create the `+page.server.ts` file in the `src/routes/dashboard/session/[id]` directory:
+
+```ts
+// /src/routes/dashboard/session/[id]/+page.server.ts
+
+import type { PageServerLoad } from './$types';
+
+import type { Session } from '$lib/server/db/schema';
+import { SessionDAO } from '$lib/server/dao/SessionDAO';
+
+export const load: PageServerLoad = async ({ params }) => {
+	const id: number = parseInt(params.id);
+
+	const session: Session | undefined = await SessionDAO.getSessionById(id);
+
+	return {
+		session
+	};
+};
+```
+
+And finally, create the corresponding `+page.svelte` file:
+
+```svelte
+<!-- /src/routes/dashboard/session/[id]/+page.svelte -->
+
+<script lang="ts">
+	import type { Session } from '$lib/server/db/schema';
+
+	let { data } = $props();
+
+	let session: Session = $derived(data.session);
+</script>
+
+<p>
+	Session: {session.id}
+</p>
+```
+
+Now we can visit both user and session pages in the dashboard. We'll build them out later to display more information, but for now we can confirm that we can query a specific user or session by ID.
+
+
 ### Querying joined tables: Selecting the top 10 users
 
 Now that we know how to query a single user by ID, let's look at how we can query the top 10 users.
@@ -343,6 +406,8 @@ If two users have the same maximum score, we won't order them (though we could, 
 Let's create a new `ScoreDAO` that will handle the logic for querying scores from the database.
 
 ```ts
+// /src/lib/server/dao/ScoreDAO.ts
+
 import { DAO } from '$lib/server/dao/DAO';
 import {
 	users,
@@ -376,9 +441,9 @@ export class ScoreDAO extends DAO {
 			.as('max_scores');
 
 		// Then find the score records that match these maximums
-		const result = await DAO.db
+		return await DAO.db
 			// Select both user and score information ...
-			.select({ users, scores, sessions })
+			.select({ user: users, score: scores, session: sessions })
 			// ... from the users table...
 			.from(users)
 			// ... joined with the maximum scores subquery ...
@@ -394,13 +459,6 @@ export class ScoreDAO extends DAO {
 			.orderBy(desc(scores.score))
 			// ... and limit the results to the top 10 scorers.
 			.limit(limit);
-
-		// Map the results to the TopScorer type
-		return result.map((row) => ({
-			user: row.users,
-			score: row.scores,
-			session: row.sessions
-		}));
 	}
 }
 
@@ -432,6 +490,7 @@ Key points to note here are:
 - We use the `desc` function from Drizzle ORM to order the results by score in descending order.
 - We limit the results to the top 10 scorers using the `limit` method.
 - We create an interface `TopScorer` to store the relevant data for each top scorer, which includes the user who achieved the score, the score record itself, and the session the score was achieved in.
+	- We map the `users`, `scores`, and `sessions` tables to this type in the `select` method. (e.g. if we select `users` (imported from our schema) we select all columns from the `users` table, and the return data is stored in an object with the `users` key. Here, we rename that key to `user` for clarity, as the returned data concerns a single user, not a list of users.) 
 
 Now, let's use this `ScoreDAO` in our `+page.server.ts` file to load the top scorers from the database.
 We'll display the top scorers in the dashboard overview, so at `/dashboard`.
@@ -447,13 +506,13 @@ import { ScoreDAO, type TopScorer } from '$lib/server/dao/ScoreDAO';
 
 export const load: PageServerLoad = async () => {
 	const limit: number = 10;
-	const topScorers: TopScorer[] = await ScoreDAO.getTopScorers(limit);
 
 	return {
 		topScorers
 	};
 };
 ```
+	const topScorers: TopScorer[] = await ScoreDAO.getTopScorers(limit);
 
 Finally, let's create a rudimentary UI to display the top scorers in the `/routes/dashboard/+page.svelte` file.
 
@@ -546,7 +605,7 @@ Next, we'll update the `/src/routes/dashboard/user/+page.svelte` file to include
 	import type { User } from '$lib/server/db/schema';
 
 	let { data } = $props();
-	let users: User[] | undefined = $derived(data.users);
+	let userResults: User[] | undefined = $derived(data.users);
 
 	function searchForUsersByName(event: Event & { currentTarget: EventTarget & HTMLInputElement }) {
 		event.currentTarget.form?.requestSubmit();
@@ -567,14 +626,14 @@ Next, we'll update the `/src/routes/dashboard/user/+page.svelte` file to include
 			</form>
 		{/snippet}
 	</Card>
-	{#if users && users.length > 0}
+	{#if userResults && userResults.length > 0}
 		<Card baseExtension="lg:min-w-md">
 			{#snippet header()}
 				<h1>Found users</h1>
 			{/snippet}
 			{#snippet article()}
 				<div class="flex max-h-64 flex-col overflow-y-scroll">
-					{#each users as user (user.id)}
+					{#each userResults as user (user.id)}
 						<a href="/dashboard/user/{user.id}">{user.username}</a>
 					{/each}
 				</div>
@@ -586,6 +645,7 @@ Next, we'll update the `/src/routes/dashboard/user/+page.svelte` file to include
 		</div>
 	{/if}
 </div>
+
 ```
 
 Key points to note here:
@@ -598,11 +658,159 @@ Key points to note here:
 
 Now we should see the relevant users appear as we type:
 
-![[responsive-search.gif]]
+![[responsive-user-search.gif]]
 
-> ℹ️ Note that this does put more strain on the database, as it will query the database every time the user alters the input field. So this user friendliness comes at a cost. In a real, scalable application, you would likely want to implement some form of debouncing (so that the database is not queried on every keystroke, but rather after a short delay (e.g. 300ms) after the user stops typing), caching (so that the database is not queried for the same input multiple times), or pre-fetching all users (so that the database is queried only once, and the results are cached for subsequent queries).
 
 Let's do the same for the sessions, so we can search for sessions by the session ID or the username of the user who created the session.
+
+> ℹ️ Note that this does put more strain on the database, as it will query the database every time the user alters the input field. So this user friendliness comes at a cost. In a real, scalable application, you would likely want to implement some form of debouncing (so that the database is not queried on every keystroke, but rather after a short delay (e.g. 300ms) after the user stops typing), caching (so that the database is not queried for the same input multiple times), or pre-fetching all users (so that the database is queried only once, and the results are cached for subsequent queries).
+We'll expand the `SessionDAO` class, and add a method to find sessions by the session ID or the username of the user who created the session, much like we did for the users.
+
+```ts
+// /src/lib/server/dao/SessionDao.ts
+
+...
+import { type Session, type User, sessions, users } from '$lib/server/db/schema';
+import { eq, like } from 'drizzle-orm';
+
+export class SessionDAO {
+    ... 
+
+	static async getSessionsLikeId(id: number): Promise<SessionWithUser[]> {
+		const result = await db
+			.select({ session: sessions, user: users })
+			.from(sessions)
+			.innerJoin(users, eq(sessions.userId, users.id))
+			.where(like(sessions.id, `${id}%`));
+		return result;
+	}
+
+	static async getSessionsLikeUserName(name: string): Promise<SessionWithUser[]> {
+		return await db
+			.select({
+				session: sessions,
+				user: users
+			})
+			.from(sessions)
+			.innerJoin(users, eq(sessions.userId, users.id))
+			.where(like(users.username, `%${name}%`));
+	}
+}
+
+export interface SessionWithUser {
+	session: Session;
+	user: User;
+}
+```
+
+And again, much like we did for the users, we'll create a new `+page.server.ts` file in the `src/routes/dashboard/session` directory, and make a `+page.svelte` file with a search form that allows users to search for sessions by ID or username.
+We display the results in a rudimentary list of clickable links, and use the `data-sveltekit-keepfocus` attribute to keep the input field focused as the user types.
+We're not going to go into too much detail here, as the code is very similar to what we did for the users: The only real 'new' thing here is that we now clear the other input field when the user types in one of the input fields, so we can discern between searching by ID or username.
+
+```ts
+// /src/routes/dashboard/session/+page.server.ts
+
+import type { PageServerLoad } from './$types';
+import { SessionDAO, type SessionWithUser } from '$lib/server/dao/SessionDAO';
+
+export const load: PageServerLoad = async ({ url }) => {
+	let sessions: SessionWithUser[] = [];
+
+	// Either query by username or by id
+	const userNameParam = url.searchParams.get('username');
+	if (userNameParam) {
+		sessions = await SessionDAO.getSessionsLikeUserName(userNameParam);
+		return { sessions };
+	}
+
+	const idParam = url.searchParams.get('id');
+	const id = idParam ? parseInt(idParam) : null;
+	if (id) {
+		sessions = await SessionDAO.getSessionsLikeId(id);
+	}
+	return { sessions };
+};
+```
+
+```svelte
+<!-- /src/routes/dashboard/session/+page.svelte -->
+
+<script lang="ts">
+	import Card from '$lib/ui/views/Card.svelte';
+	import { type SessionWithUser } from '$lib/server/dao/SessionDAO';
+
+	let { data } = $props();
+	let sessionResults: SessionWithUser[] | undefined = $derived(data.sessions);
+
+	let idInput: HTMLInputElement, usernameInput: HTMLInputElement;
+
+	function searchForSessionsById(event: Event & { currentTarget: EventTarget & HTMLInputElement }) {
+		usernameInput.value = '';
+		event.currentTarget.form?.requestSubmit();
+	}
+
+	function searchForSessionsByUsername(
+		event: Event & { currentTarget: EventTarget & HTMLInputElement }
+	) {
+		idInput.value = '';
+		event.currentTarget.form?.requestSubmit();
+	}
+</script>
+
+<div class="lg: m-auto grid grid-cols-1 items-center gap-4 lg:grid-cols-[auto_1fr] lg:gap-8">
+	<Card baseExtension="lg:min-w-md">
+		{#snippet header()}
+			<h1>Find a session</h1>
+		{/snippet}
+		{#snippet article()}
+			<form data-sveltekit-keepfocus>
+				<label for="id">Session ID: </label>
+				<input
+					class="input"
+					type="text"
+					name="id"
+					oninput={searchForSessionsById}
+					bind:this={idInput}
+				/>
+				<label for="id">Username: </label>
+				<input
+					class="input"
+					type="text"
+					name="username"
+					oninput={searchForSessionsByUsername}
+					bind:this={usernameInput}
+				/>
+			</form>
+		{/snippet}
+	</Card>
+	{#if sessionResults && sessionResults.length > 0}
+		<Card baseExtension="lg:min-w-md">
+			{#snippet header()}
+				<h1>Found Sessions</h1>
+			{/snippet}
+			{#snippet article()}
+				<div class="max-h-64 overflow-y-scroll">
+					{#each sessionResults as result (result.session.id)}
+						<div class="flex flex-col gap-2">
+							<a href='/dashboard/session/{result.session.id}'>
+								<span>Session {result.session.id} by {result.user.username}</span>
+							</a>	
+						</div>
+					{/each}
+				</div>
+			{/snippet}
+		</Card>
+	{:else}
+		<div class="flex flex-col items-center justify-center lg:min-w-md">
+			<p>Try searching for a session by id or username.</p>
+		</div>
+	{/if}
+</div>
+```
+
+Now we can search for sessions by either ID or username, and the results will be displayed in a list of clickable links that lead to the session detail page:
+
+![[responsive-session-search.gif]]
 
 ## Error handling
 
@@ -642,7 +850,7 @@ export const load: PageServerLoad = async ({ params }) => {
 </script>
 
 <div class="text-center p-8">
-	<h1 class="text-3xl font-bold">Error {page.status}</h1>
+<h1 class="text-3xl font-bold">Error {page.status}</h1>
 	<p>{page.error.message}</p>
 </div>
 ```
@@ -677,6 +885,33 @@ So to not lose the sidebar navigation in the `dashboard` routes, let's extract a
 {/if}
 ```
 
+Let's add similar error handling to the `/dashboard/session/[id]` route, so that if a session with the given ID does not exist, we show a 404 error page.
+
+```ts
+// /src/routes/dashboard/session/[id]/+page.server.ts 
+
+import type { PageServerLoad } from "./$types";
+
+import type { Session} from "$lib/server/db/schema";
+import { SessionDAO } from "$lib/server/dao/SessionDAO";
+import { error } from "@sveltejs/kit";
+
+export const load: PageServerLoad = async ({ params }) => {
+	const id: number = parseInt(params.id);
+
+	const session: Session | undefined = await SessionDAO.getSessionById(id);
+
+	if (!session) {
+		console.error(`Session with ID ${id} not found. Showing 404.`);
+		throw error(404, `Session with ID ${id} not found`);
+	}
+
+	return {
+		session
+	}
+}
+```
+
 Okay, we're all set up to handle errors now. Let's look at how we're doing so far.
 
 Querying an existing user shows their username:
@@ -690,8 +925,6 @@ And querying a non-existing user will lead us to an error page:
 And - though perhaps a little less relevant for what we're doing - visiting any other non-existing route will also lead us to an error page, but this time not sharing the layout of the dashboard:
 
 ![[error-root.png]]
-
-### 
 
 
 ## Visualizing Data
