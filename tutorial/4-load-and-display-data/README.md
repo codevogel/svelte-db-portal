@@ -606,7 +606,7 @@ Let's do the same for the sessions, so we can search for sessions by the session
 
 ## Error handling
 
-The keen eyed among you may have noticed that we are not handling cases such as where the user with the given ID does not exist in the database.
+The keen eyed among you may have noticed that we are not handling error cases yet, such as where the user with the given ID does not exist in the database.
 Let's add some error handling to our `load` function to handle this case.
 
 We can use Svelte's [error function](https://svelte.dev/docs/kit/errors) for this, and define a custom [`+error.svelte` file](https://svelte.dev/docs/kit/routing#error) (another SvelteKit routing feature) to display the error message.
