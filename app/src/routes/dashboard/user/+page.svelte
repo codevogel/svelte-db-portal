@@ -5,7 +5,7 @@
 	import type { User } from '$lib/server/db/schema';
 
 	let { data } = $props();
-	let users: User[] | undefined = $derived(data.users);
+	let userResults: User[] | undefined = $derived(data.users);
 
 	function searchForUsersByName(event: Event & { currentTarget: EventTarget & HTMLInputElement }) {
 		event.currentTarget.form?.requestSubmit();
@@ -26,14 +26,14 @@
 			</form>
 		{/snippet}
 	</Card>
-	{#if users && users.length > 0}
+	{#if userResults && userResults.length > 0}
 		<Card baseExtension="lg:min-w-md">
 			{#snippet header()}
 				<h1>Found users</h1>
 			{/snippet}
 			{#snippet article()}
 				<div class="flex max-h-64 flex-col overflow-y-scroll">
-					{#each users as user (user.id)}
+					{#each userResults as user (user.id)}
 						<a href="/dashboard/user/{user.id}">{user.username}</a>
 					{/each}
 				</div>
