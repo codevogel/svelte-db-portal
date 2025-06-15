@@ -5,34 +5,34 @@ import { type Session, type User, sessions, users } from '$lib/server/db/schema'
 import { eq, like } from 'drizzle-orm';
 
 export class SessionDAO {
+	static async getSessionById (id: number): Promise<Session | undefined> {
+		return await db.query.sessions.findFirst({
+			where: eq(sessions.id, id),
+		});
+	}
+
 	static async getSessionsLikeId(id: number): Promise<SessionWithUser[]> {
 		const result = await db
-			.select({ sessions, users })
+			.select({ session: sessions, user: users })
 			.from(sessions)
 			.innerJoin(users, eq(sessions.userId, users.id))
 			.where(like(sessions.id, `${id}%`));
-
-		
-		return result.map((row) => ({
-			session: row.sessions,
-			user: row.users
-		}));
+		return result;
 	}
 
 	static async getSessionsLikeUserName(name: string): Promise<SessionWithUser[]> {
-		const result: SessionWithUser[] = await db
+		return await db
 			.select({
-				users,
-				sessions
+				session: sessions,
+				user: users
 			})
 			.from(sessions)
 			.innerJoin(users, eq(sessions.userId, users.id))
 			.where(like(users.username, `%${name}%`));
-		return result;
 	}
 }
 
-export interface SessionWithUser extends Session {
+export interface SessionWithUser {
 	session: Session;
 	user: User;
 }
