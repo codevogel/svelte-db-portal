@@ -1472,3 +1472,82 @@ And finally, we'll display this data in our `+page.svelte` file for the session 
 	</Card>
 </div>
 ```
+
+Key differences from the previous section:
+- We display the session information in a Card, instead of a User Profile. 
+- We display the scores in a Table, instead of the user's sessions. 
+- We no longer have any clickable rows in the Table
+- We add a clickable link to the user who created the session, which navigates to the user's detail page.
+
+### Data Util functions
+
+We introduced some duplicate code in the previous sections to visualize our data, such as the `getSessionEnd` and `getCurrentAge` functions.
+We can extract these into a separate utility file to avoid duplication and make our code cleaner.
+
+We'll create a new file `/src/lib/utils/date.ts` and move the `getSessionEnd` and `getCurrentAge` functions there, giving them a more generic name to reflect their utility nature:
+
+```ts
+// /src/lib/utils/date.ts
+
+export function dateAddSeconds(createdAt: Date, duration: number): Date {
+	return new Date(createdAt.getTime() + duration * 1000);
+}
+
+export function ageFromDateOfBirth(dateOfBirth: Date): number {
+	const now = new Date();
+	let age = now.getFullYear() - dateOfBirth.getFullYear();
+	const monthDiff = now.getMonth() - dateOfBirth.getMonth();
+	if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < dateOfBirth.getDate())) {
+		age--;
+	}
+	return age;
+}
+```
+
+And then we use them in the `+page.svelte` files for the user and session detail pages:
+
+```svelte
+<!-- /src/routes/dashboard/user/[id]/+page.svelte -->
+
+<script lang="ts">
+    ...
+
+    import { ageFromDateOfBirth, dateAddSeconds } from '$lib/utils/date';
+
+    ...
+    const table: TableData = $derived({
+        caption: ...,
+        columns: ...,
+        rows: data.sessionsByUser.map((session: SessionWithAverageScore) => ({
+            values: [
+                ...,
+                dateAddSeconds(session.createdAt, session.duration).toLocaleString(),
+                ...
+            ],
+            ...
+        }))
+    });
+
+    const userAge = $derived(ageFromDateOfBirth(user.dateOfBirth));
+</script>
+
+```
+
+```svelte
+<!-- /src/routes/dashboard/session/[id]/+page.svelte -->
+
+<script lang="ts">
+    ...
+
+	import { dateAddSeconds } from '$lib/utils/date'; 
+	
+    ...
+
+	const sessionEnd = $derived(dateAddSeconds(session.createdAt, session.duration));	
+</script>
+
+...
+```
+
+Now our page code doesn't need to worry about the implementation details of how the session end time or user age is calculated, and we can reuse these utility functions in other parts of our application as well.
+
