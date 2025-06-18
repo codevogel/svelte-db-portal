@@ -19,14 +19,15 @@
 				session.id,
 				session.duration,
 				session.createdAt.toLocaleString(),
-				getSessionEnd(session).toLocaleString(),
+				getSessionEnd(session.createdAt, session.duration).toLocaleString(),
 				session.averageScore
-			]
+			],
+			url: `/dashboard/session/${session.id}`
 		}))
 	});
 
-	function getSessionEnd(session: SessionWithAverageScore): Date {
-		return new Date(session.createdAt.getTime() + session.duration * 1000);
+	function getSessionEnd(createdAt: Date, duration: number): Date {
+		return new Date(createdAt.getTime() + duration * 1000);
 	}
 
 	function getCurrentAge(dateOfBirth: Date): number {
@@ -41,7 +42,6 @@
 
 	const userAge = $derived(getCurrentAge(user.dateOfBirth));
 
-	console.log(data.sessionsByUser);
 </script>
 
 <div class="m-auto grid grid-cols-1 gap-4 lg:grid-cols-2">
