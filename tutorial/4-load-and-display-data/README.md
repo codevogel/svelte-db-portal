@@ -929,4 +929,194 @@ And - though perhaps a little less relevant for what we're doing - visiting any 
 
 ## Visualizing Data
 
+Okay, so we've loaded data into our pages, and handle errors when we encounter them.
+However, the way we display data is quite rudimentary right now. Let's create some new Svelte UI components that display this data in a more visually appealing, legible way.
+
+### Tables
+
+We should be able to display most of our data in nice looking tables. So let's start with those.
+
+[Skeleton.dev already contains some neat looking Table components](https://www.skeleton.dev/docs/tailwind/tables). We'll base our custom components on those, and add some extra functionality to them.
+
+Let's start with looking at a simple `Table` example from Skeleton.Dev's documentation:
+
+```svelte
+<script>
+	const tableData = [
+	  { position: '0', name: 'Iron', symbol: 'Fe', atomic_no: '26' },
+	  { position: '1', name: 'Rhodium', symbol: 'Rh', atomic_no: '45' },
+	  { position: '2', name: 'Iodine', symbol: 'I', atomic_no: '53' },
+	  { position: '3', name: 'Radon', symbol: 'Rn', atomic_no: '86' },
+	  { position: '4', name: 'Technetium', symbol: 'Tc', atomic_no: '43' }
+	];
+</script>
+
+<div class="table-wrap">
+  <table class="table caption-bottom">
+    <tbody class="[&>tr]:hover:preset-tonal-primary">
+      {
+        tableData.map((row) => (
+          <tr>
+            <td>{row.position}</td>
+            <td>{row.symbol}</td>
+            <td>{row.name}</td>
+            <td class="text-right">{row.atomic_no}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+```
+As with any Table, we have a `table` element that contains a `tbody` element with a list of `tr` (table row) elements, each containing a list of `td` (table data) elements. We can optionally add a `thead` or `tfoot` for a table header or footer respectively.
+
+The above example uses the `map` function to iterate over the data in the `tableData` array, rendering the relevant data.
+
+This looks pretty decent - but we can do better, to make the Table a little more flexibile. In the above example, the `td` fields all contain hard-coded references to the relevant data fields. We're instead going to make it so we can pass any type of data to our Table component, so we don't have to mess around with altering the Table code itself.
+
+To do this, we'll export two new `interface`s in our `Table` component: 
+
+```ts
+export interface TableData {
+	caption?: string;
+	columns: string[];
+	rows: TableRow[];
+}
+
+export interface TableRow {
+	values: (string | number | null)[];
+	url?: string;
+}
+```
+
+The `TableData` interface represents the data that we want to display in the Table, and contains an optional `caption` for the Table, a list of `columns` (the column headers), and a list of `rows` (the actual data rows).
+The `TableRow` interface represents a single row in the Table, and contains a list of `values` (the actual data values for that row), and an optional `url` to link to a specific page when the row is clicked.
+
+Next, let's create a new `Table.svelte` component that uses these interfaces to render the Table:
+
+```svelte
+<!-- /src/lib/ui/views/Table.svelte -->
+
+<script lang="ts">
+	import { goto } from '$app/navigation';
+
+	export interface TableData {
+		caption?: string;
+		columns: string[];
+		rows: TableRow[];
+	}
+
+	export interface TableRow {
+		values: (string | number | null)[];
+		url?: string;
+	}
+
+	let { table }: { table: TableData } = $props();
+</script>
+
+<section class="space-y-4">
+	<!-- Table -->
+	<div class="table-wrap">
+		<table class="table caption-bottom">
+			{#if table.caption}
+				<caption style="white-space: pre-line">{table.caption}</caption>
+			{/if}
+			<thead>
+				<tr>
+					{#each table.columns as header, index (index)}
+						<th>{header}</th>
+					{/each}
+				</tr>
+			</thead>
+			<tbody class="[&>tr]:hover:preset-tonal-primary">
+				{#each table.rows as row, index (index)}
+					<tr
+						onclick={() => (row.url ? goto(row.url) : null)}
+						class={row.url ? 'cursor-pointer' : ''}
+					>
+						{#each row.values as value, i (i)}
+							<td>{value}</td>
+						{/each}
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+</section>
+```
+
+Key points to note here:
+- We use the `TableData` and `TableRow` interfaces to define the data structure for the Table.
+- We expose the `table` prop, which is of type `TableData`, so we can pass the Table data to the component.
+- We use an `each` block to iterate over both the `columns` and `rows` arrays to render the Table headers and data rows.
+- We use the `goto` function from `$app/navigation` to navigate to a specific page when a row is clicked, if the `url` property is set on the row.
+- We add a `cursor-pointer` class to the row if it has a `url`, so that the user knows they can click on the row to navigate to a different page.
+
+Next, let's see how we can use this `Table` component in our dashboard pages.
+
+#### Adding a table containing search results
+
+First, let's see how we can use it to display the found users in the `/dashboard/user/+page.svelte` file.
+
+```svelte
+<!-- /src/routes/dashboard/user/+page.svelte -->
+
+<script lang="ts">
+	...
+	import Table from '$lib/ui/views/Table.svelte';
+
+	...	
+
+	let table = $derived({
+		columns: ['Username', 'Created At'],
+		rows: userResults?.map((user) => ({
+			values: [user.username, user.createdAt.toLocaleDateString()],
+			url: `/dashboard/user/${user.id}`
+		}))
+	});
+</script>
+
+<div class="...">
+	...
+	{#if userResults && userResults.length > 0}
+		<Card baseExtension="...">
+			...	
+			{#snippet article()}
+				<div class="flex max-h-64 flex-col overflow-y-scroll">
+					<Table {table} />
+				</div>
+			{/snippet}
+		</Card>
+	{:else}
+		...
+	{/if}
+</div>
+```
+
+Key points to note here:
+- We import the `Table` component and use it to render the Table with the found users.
+- We create a `table` object that:
+	- Contains the `columns` for the Table, which is an array of strings containing the column headers. 
+	- Contains the `rows` for the table, which is an array of `TableRow` objects.
+		- Each `TableRow` object contains a `values` array with values for each column in the row, and an optional `url` to navigate to when the row is clicked.
+	- We can do any additional data formatting / transformation here, such as string interpolation, date formatting, etc.
+
+This will display the found users in a much more presentable way:
+
+![[found-users-table.gif]]
+
+Similarly, we can implement the Table into our `/dashboard/session/+page.svelte` file to display the found sessions:
+(We're not showing the full page code here, as you should be able to implement this yourself by now - the code is very similar to the user page.)
+
+```ts
+let table = $derived({
+columns: ['ID', 'Username'],
+		rows: sessionResults?.map((session) => {
+			return {
+				values: [session.id, session.username],
+				url: `/dashboard/session/${session.id}`
+			};
+		})
+	});
+```
 
