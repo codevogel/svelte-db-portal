@@ -6,6 +6,7 @@
 	import Table from '$lib/ui/views/Table.svelte';
 	import type { Score } from '$lib/server/db/schema';
 	import type { SessionWithUser } from '$lib/server/dao/SessionDAO.js';
+	import { dateAddSeconds } from '$lib/utils/date'; 
 	
 	let { data } = $props();
 
@@ -26,11 +27,7 @@
 		}))
 	});
 
-	function getSessionEnd(createdAt: Date, duration: number): Date {
-		return new Date(createdAt.getTime() + duration * 1000);
-	}
-
-	const sessionEnd = $derived(getSessionEnd(session.createdAt, session.duration));	
+	const sessionEnd = $derived(dateAddSeconds(session.createdAt, session.duration));	
 </script>
 
 <div class="m-auto grid grid-cols-1 gap-4 lg:grid-cols-2">

@@ -6,6 +6,7 @@
 	import type { TableData } from '$lib/ui/views/Table.svelte';
 	import Card from '$lib/ui/views/Card.svelte';
 	import Table from '$lib/ui/views/Table.svelte';
+	import { ageFromDateOfBirth, dateAddSeconds } from '$lib/utils/date';
 
 	let { data } = $props();
 
@@ -19,28 +20,14 @@
 				session.id,
 				session.duration,
 				session.createdAt.toLocaleString(),
-				getSessionEnd(session.createdAt, session.duration).toLocaleString(),
+				dateAddSeconds(session.createdAt, session.duration).toLocaleString(),
 				session.averageScore
 			],
 			url: `/dashboard/session/${session.id}`
 		}))
 	});
 
-	function getSessionEnd(createdAt: Date, duration: number): Date {
-		return new Date(createdAt.getTime() + duration * 1000);
-	}
-
-	function getCurrentAge(dateOfBirth: Date): number {
-		const now = new Date();
-		let age = now.getFullYear() - dateOfBirth.getFullYear();
-		const monthDiff = now.getMonth() - dateOfBirth.getMonth();
-		if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < dateOfBirth.getDate())) {
-			age--;
-		}
-		return age;
-	}
-
-	const userAge = $derived(getCurrentAge(user.dateOfBirth));
+	const userAge = $derived(ageFromDateOfBirth(user.dateOfBirth));
 
 </script>
 
