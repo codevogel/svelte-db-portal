@@ -682,11 +682,14 @@ export class SessionDAO extends DAO {
 			.from(sessions)
 			.innerJoin(users, eq(sessions.userId, users.id))
 			.where(like(sessions.id, `${id}%`));
-		return result;
+		return result.map((row) => ({
+			...row.session,
+			user: row.user
+		}));
 	}
 
 	static async getSessionsLikeUserName(name: string): Promise<SessionWithUser[]> {
-		return await DAO.db
+		const result = await DAO.db
 			.select({
 				session: sessions,
 				user: users
@@ -694,13 +697,16 @@ export class SessionDAO extends DAO {
 			.from(sessions)
 			.innerJoin(users, eq(sessions.userId, users.id))
 			.where(like(users.username, `%${name}%`));
+		return result.map((row) => ({
+			...row.session,
+			user: row.user
+		}));
 	}
 }
 
-export interface SessionWithUser {
-	session: Session;
+export type SessionWithUser = Session & {
 	user: User;
-}
+};
 ```
 
 And again, much like we did for the users, we'll create a new `+page.server.ts` file in the `src/routes/dashboard/session` directory, and make a `+page.svelte` file with a search form that allows users to search for sessions by ID or username.
@@ -1260,14 +1266,15 @@ And finally, we can display this data in our `+page.svelte` file for the user de
 				session.id,
 				session.duration,
 				session.createdAt.toLocaleString(),
-				getSessionEnd(session).toLocaleString(),
+				getSessionEnd(session.createdAt, session.duration).toLocaleString(),
 				session.averageScore
-			]
+			],
+			url: `/dashboard/session/${session.id}`
 		}))
 	});
 
-	function getSessionEnd(session: SessionWithAverageScore): Date {
-		return new Date(session.createdAt.getTime() + session.duration * 1000);
+	function getSessionEnd(createdAt: Date, duration: number): Date {
+		return new Date(createdAt.getTime() + duration * 1000);
 	}
 
 	function getCurrentAge(dateOfBirth: Date): number {
@@ -1277,14 +1284,11 @@ And finally, we can display this data in our `+page.svelte` file for the user de
 		if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < dateOfBirth.getDate())) {
 			age--;
 		}
-		return age;	
+		return age;
 	}
 
-	const userAge = $derived(
-		getCurrentAge(user.dateOfBirth)
-	);
-		
-	console.log(data.sessionsByUser);
+	const userAge = $derived(getCurrentAge(user.dateOfBirth));
+
 </script>
 
 <div class="m-auto grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -1323,6 +1327,7 @@ Key points to note here:
 - We import the `UserWithProfile` and `SessionWithAverageScore` types to type the data we receive from the `load` function. 
 - We create a `TableData` object that contains the data for the Table, including the caption, columns, and rows.
     - We use the `getSessionEnd` function to calculate the end time of the session based on the start time and duration.
+    - We make the rows clickable by providing a `url` for each row, which navigates to the session detail page when clicked.
 - We add a User Profile card that displays the user's profile information
     - We use the `getCurrentAge` function to calculate the user's age based on their date of birth.
 - We display the user's sessions in a Table, using the `Table` component we created earlier
