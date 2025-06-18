@@ -1336,4 +1336,139 @@ We should now see a neat User Profile section and a table providing an overview 
 
 ![[user-details.png]]
 
+### Displaying scores per session in a table
 
+Let's display some information about a session, and the scores achieved in that session.
+Our workflow will be similar to the previous section, but instead of displaying information about a users' sessions, we will display information about a single session, and the scores achieved in that session.
+
+First, we'll expand our `SessionDAO` to include a method that retrieves a session, along with some information about the user who created it (previously we only retrieved the session itself).
+
+```ts
+// /src/lib/server/dao/SessionDao.ts
+export class SessionDAO extends DAO {
+    ...
+
+	static async getSessionByIdWithUser(id: number): Promise<SessionWithUser | undefined> {
+		const result = await DAO.db.select({
+			session: sessions,
+			user: users
+		})
+			.from(sessions)
+			.innerJoin(users, eq(sessions.userId, users.id))
+			.where(eq(sessions.id, id))
+			.limit(1)
+			.then((rows) => rows[0]);
+		return result ? { ...result.session, user: result.user } : undefined;
+	}
+}
+```
+
+Next, we'll expand the ScoreDAO to include a method that retrieves all scores for a given session:
+
+
+```ts
+// /src/lib/server/dao/ScoreDAO.ts
+export class ScoreDAO extends DAO {
+    ...
+
+	static async findScoresForSession(sessionId: number): Promise<Score[]> {
+		return await DAO.db.query.scores.findMany({
+			where: eq(scores.sessionId, sessionId)
+		});
+	}
+}
+```
+
+We'll then load this data in our `+page.server.ts` file for the session detail page:
+
+```ts
+// /src/routes/dashboard/session/[id]/+page.server.ts 
+
+...
+
+import type { Score } from "$lib/server/db/schema";
+import { SessionDAO, type SessionWithUser } from "$lib/server/dao/SessionDAO";
+import { ScoreDAO } from "$lib/server/dao/ScoreDAO";
+
+export const load: PageServerLoad = async ({ params }) => {
+    ...
+
+	const session: SessionWithUser | undefined = await SessionDAO.getSessionByIdWithUser(id);
+	const scores: Score[] = await ScoreDAO.findScoresForSession(id);
+
+    ...	
+
+	return {
+		session,
+		scoresInSession: scores,
+	}
+}
+```
+
+And finally, we'll display this data in our `+page.svelte` file for the session detail page:
+
+```svelte
+<!-- /src/routes/dashboard/session/[id]/+page.svelte -->
+
+<script lang="ts">
+	import type { TableData } from '$lib/ui/views/Table.svelte';
+	import Card from '$lib/ui/views/Card.svelte';
+	import Table from '$lib/ui/views/Table.svelte';
+	import type { Score } from '$lib/server/db/schema';
+	import type { SessionWithUser } from '$lib/server/dao/SessionDAO.js';
+	
+	let { data } = $props();
+
+	const session: SessionWithUser = $derived(data.session);
+	const user = $derived(session.user);
+
+	const table: TableData = $derived({
+		caption: 'A list of scores in this session.',
+		columns: ['Level ID', 'Score', 'Accuracy', 'Time Taken', 'Created At'],
+		rows: data.scoresInSession.map((score: Score) => ({
+			values: [
+				score.levelId,
+				score.score,
+				score.accuracy,
+				score.timeTaken,
+				score.createdAt.toLocaleString()
+			]
+		}))
+	});
+
+	function getSessionEnd(createdAt: Date, duration: number): Date {
+		return new Date(createdAt.getTime() + duration * 1000);
+	}
+
+	const sessionEnd = $derived(getSessionEnd(session.createdAt, session.duration));	
+</script>
+
+<div class="m-auto grid grid-cols-1 gap-4 lg:grid-cols-2">
+	<Card>
+		{#snippet header()}
+			<h1>Session Information</h1>
+		{/snippet}
+		{#snippet article()}
+			<div class="grid grid-cols-2 justify-between">
+				<span>ID</span>
+				<span>{session.id}</span>
+				<span>Created At</span>
+				<span>{session.createdAt.toLocaleString()}</span>
+				<span>Ended At</span>
+				<span>{sessionEnd.toLocaleString()}</span>
+				<span>By</span>
+				<a href="/dashboard/user/{user.id}" class="underline">{user.username}</a>
+			</div>
+		{/snippet}
+	</Card>
+
+	<Card>
+		{#snippet header()}
+			<h1>Scores</h1>
+		{/snippet}
+		{#snippet article()}
+			<Table {table} />
+		{/snippet}
+	</Card>
+</div>
+```
