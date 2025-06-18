@@ -3,13 +3,26 @@
 <script lang="ts">
 	import Card from '$lib/ui/views/Card.svelte';
 	import { type SessionWithUser } from '$lib/server/dao/SessionDAO';
+	import Table from '$lib/ui/views/Table.svelte';
 
 	let { data } = $props();
 	let sessionResults: SessionWithUser[] | undefined = $derived(data.sessions);
 
 	let idInput: HTMLInputElement, usernameInput: HTMLInputElement;
 
-	function searchForSessionsById(event: Event & { currentTarget: EventTarget & HTMLInputElement }) {
+	let table = $derived({
+		columns: ['ID', 'Username'],
+		rows: sessionResults?.map((session) => {
+			return {
+				values: [session.id, session.username],
+				url: `/dashboard/session/${session.id}`
+			};
+		})
+	});
+
+	function searchForSessionsById(
+		event: Event & { currentTarget: EventTarget & HTMLInputElement }
+	) {
 		usernameInput.value = '';
 		event.currentTarget.form?.requestSubmit();
 	}
@@ -55,13 +68,7 @@
 			{/snippet}
 			{#snippet article()}
 				<div class="max-h-64 overflow-y-scroll">
-					{#each sessionResults as result (result.session.id)}
-						<div class="flex flex-col gap-2">
-							<a href='/dashboard/session/{result.session.id}'>
-								<span>Session {result.session.id} by {result.user.username}</span>
-							</a>	
-						</div>
-					{/each}
+					<Table {table} />
 				</div>
 			{/snippet}
 		</Card>

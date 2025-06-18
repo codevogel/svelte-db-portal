@@ -3,6 +3,7 @@
 <script lang="ts">
 	import Card from '$lib/ui/views/Card.svelte';
 	import type { User } from '$lib/server/db/schema';
+	import Table from '$lib/ui/views/Table.svelte';
 
 	let { data } = $props();
 	let userResults: User[] | undefined = $derived(data.users);
@@ -10,6 +11,14 @@
 	function searchForUsersByName(event: Event & { currentTarget: EventTarget & HTMLInputElement }) {
 		event.currentTarget.form?.requestSubmit();
 	}
+
+	let table = $derived({
+		columns: ['Username', 'Created At'],
+		rows: userResults?.map((user) => ({
+			values: [user.username, user.createdAt.toLocaleDateString()],
+			url: `/dashboard/user/${user.id}`
+		}))
+	});
 </script>
 
 <div
@@ -33,9 +42,7 @@
 			{/snippet}
 			{#snippet article()}
 				<div class="flex max-h-64 flex-col overflow-y-scroll">
-					{#each userResults as user (user.id)}
-						<a href="/dashboard/user/{user.id}">{user.username}</a>
-					{/each}
+					<Table {table} />
 				</div>
 			{/snippet}
 		</Card>
