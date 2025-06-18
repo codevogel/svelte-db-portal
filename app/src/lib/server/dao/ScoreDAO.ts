@@ -52,6 +52,12 @@ export class ScoreDAO extends DAO {
 			// ... and limit the results to the top 10 scorers.
 			.limit(limit);
 	}
+
+	static async findScoresForSession(sessionId: number): Promise<Score[]> {
+		return await DAO.db.query.scores.findMany({
+			where: eq(scores.sessionId, sessionId)
+		});
+	}
 }
 
 // Stores the relevant User, Score, and Session data for a top scorer

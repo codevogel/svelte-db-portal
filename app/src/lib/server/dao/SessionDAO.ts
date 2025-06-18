@@ -11,17 +11,33 @@ export class SessionDAO extends DAO {
 		});
 	}
 
+	static async getSessionByIdWithUser(id: number): Promise<SessionWithUser | undefined> {
+		const result = await DAO.db.select({
+			session: sessions,
+			user: users
+		})
+			.from(sessions)
+			.innerJoin(users, eq(sessions.userId, users.id))
+			.where(eq(sessions.id, id))
+			.limit(1)
+			.then((rows) => rows[0]);
+		return result ? { ...result.session, user: result.user } : undefined;
+	}
+
 	static async getSessionsLikeId(id: number): Promise<SessionWithUser[]> {
 		const result = await DAO.db
 			.select({ session: sessions, user: users })
 			.from(sessions)
 			.innerJoin(users, eq(sessions.userId, users.id))
 			.where(like(sessions.id, `${id}%`));
-		return result;
+		return result.map((row) => ({
+			...row.session,
+			user: row.user
+		}));
 	}
 
 	static async getSessionsLikeUserName(name: string): Promise<SessionWithUser[]> {
-		return await DAO.db
+		const result = await DAO.db
 			.select({
 				session: sessions,
 				user: users
@@ -29,6 +45,10 @@ export class SessionDAO extends DAO {
 			.from(sessions)
 			.innerJoin(users, eq(sessions.userId, users.id))
 			.where(like(users.username, `%${name}%`));
+		return result.map((row) => ({
+			...row.session,
+			user: row.user
+		}));
 	}
 
 	static async findSessionsByUserId(userId: number): Promise<SessionWithAverageScore[]> {
@@ -49,10 +69,9 @@ export class SessionDAO extends DAO {
 	}
 }
 
-export interface SessionWithUser {
-	session: Session;
+export type SessionWithUser = Session & {
 	user: User;
-}
+};
 
 export type SessionWithAverageScore = Session & {
 	averageScore: number;
