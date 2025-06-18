@@ -338,13 +338,13 @@ First, we'll create the `SessionDAO`:
 ```ts
 // /src/lib/server/dao/SessionDao.ts
 
-import { db } from '$lib/server/db';
+import { DAO } from '$lib/server/dao/DAO';
 import { type Session, sessions } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 
-export class SessionDAO {
+export class SessionDAO extends DAO {
 	static async getSessionById (id: number): Promise<Session | undefined> {
-		return await db.query.sessions.findFirst({
+		return await DAO.db.query.sessions.findFirst({
 			where: eq(sessions.id, id),
 		});
 
@@ -673,11 +673,11 @@ We'll expand the `SessionDAO` class, and add a method to find sessions by the se
 import { type Session, type User, sessions, users } from '$lib/server/db/schema';
 import { eq, like } from 'drizzle-orm';
 
-export class SessionDAO {
+export class SessionDAO extends DAO {
     ... 
 
 	static async getSessionsLikeId(id: number): Promise<SessionWithUser[]> {
-		const result = await db
+		const result = await DAO.db
 			.select({ session: sessions, user: users })
 			.from(sessions)
 			.innerJoin(users, eq(sessions.userId, users.id))
@@ -686,7 +686,7 @@ export class SessionDAO {
 	}
 
 	static async getSessionsLikeUserName(name: string): Promise<SessionWithUser[]> {
-		return await db
+		return await DAO.db
 			.select({
 				session: sessions,
 				user: users
@@ -930,8 +930,7 @@ And - though perhaps a little less relevant for what we're doing - visiting any 
 ## Visualizing Data
 
 Okay, so we've loaded data into our pages, and handle errors when we encounter them.
-However, the way we display data is quite rudimentary right now. Let's create some new Svelte UI components that display this data in a more visually appealing, legible way.
-
+However, the way we display data is quite rudimentary right now. We want to create some components that visualize our data in a more sensible way. 
 ### Tables
 
 We should be able to display most of our data in nice looking tables. So let's start with those.
@@ -1054,7 +1053,7 @@ Key points to note here:
 
 Next, let's see how we can use this `Table` component in our dashboard pages.
 
-#### Adding a table containing search results
+#### Showing user and session search results in tables
 
 First, let's see how we can use it to display the found users in the `/dashboard/user/+page.svelte` file.
 
@@ -1119,4 +1118,217 @@ columns: ['ID', 'Username'],
 		})
 	});
 ```
+
+#### Displaying user sessions with an average score table
+
+On our `/src/routes/dashboard/user/[id]` route, we'd not only like to show some data about the user itself (their `userProfile`) we'd like to show all of the sessions that user has played, with a field showing their average score per session.
+
+First, we need to write the relevant query in our `SessionDAO` and load the data in the `+page.server.ts` file:
+
+```ts
+// /src/lib/server/dao/SessionDao.ts
+...
+import { type Session, type User, scores, sessions, users } from '$lib/server/db/schema';
+import { avg, eq, like } from 'drizzle-orm';
+
+export class SessionDAO extends DAO {
+    ...	
+
+	static async findSessionsByUserId(userId: number): Promise<SessionWithAverageScore[]> {
+		const result = await DAO.db
+			.select({
+				session: sessions,
+				averageScore: avg(scores.score).mapWith(Number)
+			})
+			.from(sessions)
+			.innerJoin(scores, eq(sessions.id, scores.sessionId))
+			.where(eq(sessions.userId, userId))
+			.groupBy(sessions.id);
+
+		return result.map((row) => ({
+			...row.session,
+			averageScore: row.averageScore
+		}));
+	}
+}
+
+...
+
+export type SessionWithAverageScore = Session & {
+	averageScore: number;
+};
+```
+
+Key points to note here:
+- We use the `avg` function from Drizzle ORM to calculate the average score for each session.
+- We use the `mapWith(Number)` method to ensure that the average score is returned as a number, as it is returned as a string by default.
+- We use the `groupBy` method to group the results by session ID, so that we get one row per session with the average score.
+- We export a new type `SessionWithAverageScore` that extends the `Session` type and adds an `averageScore` field.
+
+While we're at it, let's also add a method to the `UserDAO` to find a users profile information by their ID, so we can load the user's profile information on the user detail page:
+
+```ts
+...
+import type { User, UserProfile } from '$lib/server/db/schema';
+import { userProfiles, users } from '$lib/server/db/schema';
+
+export class UserDAO extends DAO {
+    ...
+
+	static async findUserWithProfileById(id: number): Promise<UserWithProfile | undefined> {
+		const result = await DAO.db
+			.select({
+				users,
+				userProfiles
+			})
+			.from(users)
+			.innerJoin(userProfiles, eq(users.id, userProfiles.userId))
+			.where(eq(users.id, id));
+
+		if (result.length !== 1) {
+			return undefined;
+		}
+
+		return {
+			...result[0].users,
+			profile: result[0].userProfiles
+		};
+	}
+}
+
+export type UserWithProfile = User & {
+	profile: UserProfile;
+};
+```
+
+Key points to note here:
+- We use the `innerJoin` method to join the `users` and `userProfiles` tables, so we can get the user's profile information.
+- We perform a sanity check to ensure that we only return a single user with their profile information (our database constraints should enforce this, but it's good practice to check).
+- We export a new type `UserWithProfile` that extends the `User` type and adds a `profile` field containing the user's profile information. 
+
+Next, we can load this data in our `+page.server.ts` file for the user detail page:
+
+```ts
+// /src/routes/dashboard/user/[id]/+page.server.ts
+
+import type { PageServerLoad } from './$types';
+
+import { UserDAO, type UserWithProfile } from '$lib/server/dao/UserDAO';
+import { error } from '@sveltejs/kit';
+import { SessionDAO, type SessionWithAverageScore } from '$lib/server/dao/SessionDAO';
+
+export const load: PageServerLoad = async ({ params }) => {
+	const id: number = parseInt(params.id);
+
+	const user: UserWithProfile | undefined = await UserDAO.findUserWithProfileById(id);
+	const sessionsByUser: SessionWithAverageScore[] = await SessionDAO.findSessionsByUserId(id);
+	
+
+	if (!user) {
+		console.error(`User with ID ${id} not found. Showing 404.`);
+		throw error(404, `User with ID ${id} not found`);
+	}
+
+	return {
+		user,
+		sessionsByUser
+	};
+};
+```
+
+And finally, we can display this data in our `+page.svelte` file for the user detail page.
+
+```svelte
+<!-- /src/routes/dashboard/user/[id]/+page.svelte -->
+
+<script lang="ts">
+	import type { UserWithProfile } from '$lib/server/dao/UserDAO';
+	import type { SessionWithAverageScore } from '$lib/server/dao/SessionDAO';
+	import type { TableData } from '$lib/ui/views/Table.svelte';
+	import Card from '$lib/ui/views/Card.svelte';
+	import Table from '$lib/ui/views/Table.svelte';
+
+	let { data } = $props();
+
+	let user: UserWithProfile = $derived(data.user);
+
+	const table: TableData = $derived({
+		caption: 'Scores in this session.',
+		columns: ['ID', 'Duration', 'Created At', 'Ended At', 'Average Score'],
+		rows: data.sessionsByUser.map((session: SessionWithAverageScore) => ({
+			values: [
+				session.id,
+				session.duration,
+				session.createdAt.toLocaleString(),
+				getSessionEnd(session).toLocaleString(),
+				session.averageScore
+			]
+		}))
+	});
+
+	function getSessionEnd(session: SessionWithAverageScore): Date {
+		return new Date(session.createdAt.getTime() + session.duration * 1000);
+	}
+
+	function getCurrentAge(dateOfBirth: Date): number {
+		const now = new Date();
+		let age = now.getFullYear() - dateOfBirth.getFullYear();
+		const monthDiff = now.getMonth() - dateOfBirth.getMonth();
+		if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < dateOfBirth.getDate())) {
+			age--;
+		}
+		return age;	
+	}
+
+	const userAge = $derived(
+		getCurrentAge(user.dateOfBirth)
+	);
+		
+	console.log(data.sessionsByUser);
+</script>
+
+<div class="m-auto grid grid-cols-1 gap-4 lg:grid-cols-2">
+	<Card>
+		{#snippet header()}
+			<h1>User Profile</h1>
+		{/snippet}
+		{#snippet article()}
+			<div class="grid grid-cols-2 justify-between">
+				<span>Username:</span>
+				<span>{user.username}</span>
+				<span>First Name:</span>
+				<span>{user.profile.firstName}</span>
+				<span>Last Name:</span>
+				<span>{user.profile.lastName}</span>
+				<span>Age:</span>
+				<span>{userAge}</span>
+				<span>User Since:</span>
+				<span>{user.createdAt.toLocaleDateString()}</span>
+			</div>
+		{/snippet}
+	</Card>
+
+	<Card>
+		{#snippet header()}
+			<h1>Sessions</h1>
+		{/snippet}
+		{#snippet article()}
+			<Table {table} />
+		{/snippet}
+	</Card>
+</div>
+```
+
+Key points to note here:
+- We import the `UserWithProfile` and `SessionWithAverageScore` types to type the data we receive from the `load` function. 
+- We create a `TableData` object that contains the data for the Table, including the caption, columns, and rows.
+    - We use the `getSessionEnd` function to calculate the end time of the session based on the start time and duration.
+- We add a User Profile card that displays the user's profile information
+    - We use the `getCurrentAge` function to calculate the user's age based on their date of birth.
+- We display the user's sessions in a Table, using the `Table` component we created earlier
+
+We should now see a neat User Profile section and a table providing an overview of their sessions, along with the average score per session:
+
+![[user-details.png]]
+
 
