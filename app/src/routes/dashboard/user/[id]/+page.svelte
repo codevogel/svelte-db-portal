@@ -7,6 +7,7 @@
 	import Card from '$lib/ui/views/Card.svelte';
 	import Table from '$lib/ui/views/Table.svelte';
 	import { ageFromDateOfBirth, dateAddSeconds } from '$lib/utils/date';
+	import AverageScoreOverTimeForUserChart from '$lib/ui/views/charts/AverageScoreOverTimeForUserChart.svelte';
 
 	let { data } = $props();
 
@@ -24,7 +25,11 @@
 				session.averageScore
 			],
 			url: `/dashboard/session/${session.id}`
-		}))
+		})),
+		paginationOptions: {
+			size: 3,
+			sizePerPage: [3, 5, 10],
+		}
 	});
 
 	const userAge = $derived(ageFromDateOfBirth(user.dateOfBirth));

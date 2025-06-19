@@ -17,7 +17,10 @@
 		rows: userResults?.map((user) => ({
 			values: [user.username, user.createdAt.toLocaleDateString()],
 			url: `/dashboard/user/${user.id}`
-		}))
+		})),
+		paginationOptions: {
+			enabled: false
+		}
 	});
 </script>
 

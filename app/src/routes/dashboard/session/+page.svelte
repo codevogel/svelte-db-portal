@@ -14,10 +14,13 @@
 		columns: ['ID', 'Username'],
 		rows: sessionResults?.map((session) => {
 			return {
-				values: [session.id, session.username],
+				values: [session.id, session.user.username],
 				url: `/dashboard/session/${session.id}`
 			};
-		})
+		}),
+		paginationOptions: {
+			enabled: false	
+		}
 	});
 
 	function searchForSessionsById(
