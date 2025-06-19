@@ -1711,3 +1711,266 @@ For example, to disable pagination on the user and session search results:
 ```
 
 
+### Charts
+
+Next, let's look at visualizing our data in a more graphical way, using charts.
+
+To do this, we'll use the [Chart.js](https://www.chartjs.org/) library, which is a popular JavaScript library for creating charts and graphs.
+We won't go into too much detail about how to use Chart.js, as it's website is well documented, but we'll mainly talk about how we can integrate it into our SvelteKit application.
+
+We want to create a Chart in which Time is on the X-axis, to visualize the scores achieved in a session over time. For this we [need](https://www.chartjs.org/docs/latest/axes/cartesian/time.html) a date adapter.
+We'll use a [date-fns adapter](https://github.com/chartjs/chartjs-adapter-date-fns) to handle date formatting in the charts.
+
+First, we'll install `chart.js`, `date-fns`, and the `chartjs-adapter-date-fns` package: 
+
+```bash
+npm i chart.js date-fns chartjs-adapter-date-fns
+```
+
+Next, let's create a new `Chart.svelte` component in `/src/lib/ui/views/charts/Chart.svelte`, that we will use as a base component for our charts:
+
+```svelte
+<!-- /src/lib/ui/views/charts/Chart.svelte -->
+
+<script lang="ts">
+	//@ts-nocheck
+	import { Chart } from 'chart.js/auto';
+	import 'chartjs-adapter-date-fns';
+	import { onMount } from 'svelte';
+
+	let { type, data, options } = $props();
+
+	let chartElement;
+	let chartInstance: Chart | null = null;
+
+	onMount(() => {
+		renderChart();
+		window.addEventListener('resize', renderChart);
+	});
+
+	function renderChart() {
+		// When resizing, it's possible the chart gets stuck in it's smallest state.
+		// To avoid this, we destroy the chart instance and create a new one, disabling the pop-in animation.
+		let animate = true;
+		if (chartInstance) {
+			chartInstance.destroy();
+			animate = false;
+		}
+		chartInstance = new Chart(chartElement, {
+			type: type,
+			data: data,
+			options: {
+				...options,
+				animation: animate
+			}
+		});
+	}
+</script>
+
+<canvas id="chart" bind:this={chartElement}></canvas>
+```
+
+The key points to note here are:
+- We import the `Chart` class from `chart.js/auto`
+- We expose the `type`, `data`, and `options` props, which will be used to [configure the chart](https://www.chartjs.org/docs/latest/configuration/).
+- We use [the `onMount` lifecycle function](https://svelte.dev/docs/svelte/lifecycle-hooks#onMount) to render the chart when the component is mounted.
+- We bind the `<canvas>` element to `chartElement`, which is where the chart will be rendered.
+- We import `chartjs-adapter-date-fns` to enable date formatting in the chart.
+- We add some extra logic to handle resizing the chart to ensure it resizes correctly when the window is resized.
+
+Next, let's create a new `ScoreOverTimeInSessionChart.svelte` component in `/src/lib/ui/views/charts/ScoreOverTimeInSessionChart.svelte`, which will use the `Chart` component to display the scores achieved in a session over time.
+This won't be a reusable component, but we can abstract away all the logic regarding this specific chart, so we can easily use it in our session detail page.
+
+The main thing we need to understand is what type of chart we want to create, and how to `chart.js` expects the data to be formatted.
+In this case, we want to create a line chart, where the x-axis is a time axis, and the y-axis is the score achieved at that time.
+We can find examples of line charts on the [Chart.js documentation website](https://www.chartjs.org/docs/latest/charts/line.html), and learn from there.
+
+Chart.js expects the data to be in a specific format, of x and y values.
+We map the score data to a new array of objects, where each object contains an `x` value (the time the score was achieved) and a `y` value (the score itself).
+
+
+
+```svelte
+<!-- /src/lib/ui/views/charts/ScoreOverTimeInSessionChart.svelte -->
+
+<script lang="ts">
+	import type { Score } from '$lib/server/db/schema';
+	import { nl } from 'date-fns/locale';
+	import Chart from '$lib/ui/views/charts/Chart.svelte';
+
+	let { scores }: { scores: Score[] } = $props();
+
+	// We sort the scores by createdAt,
+	// then map the x values (time) to the createdAt,
+	// and the y values (score) to the score.
+	const inData = scores
+		.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+		.map((score) => {
+			return {
+				x: score.createdAt,
+				y: score.score
+			};
+		});
+
+	const chartData = {
+		// Display a line chart 
+		type: 'line',
+
+		data: {
+			// Labels for the x-axis
+			labels: inData.map((score) => score.x),
+			// Datasets for the y-axis
+			datasets: [
+				// Just one dataset: the score over time
+				{
+					label: 'Score',
+					data: inData.map((score) => score.y)
+				}
+			]
+		},
+		options: {
+			// Define how the charts scales should behave
+			scales: {
+				// The x-axis is of type 'time' and has a date adapter for the 'nl' locale
+				x: {
+					type: 'time',
+					adapters: {
+						date: {
+							locale: nl
+						}
+					},
+					bounds: 'data'
+				},
+				// The y-axis starts at zero (rather than the lowest value)
+				y: {
+					beginAtZero: true
+				}
+			}
+		}
+	};
+</script>
+
+<Chart type={chartData.type} data={chartData.data} options={chartData.options} />
+```
+
+Key points to note here:
+- We import the `Chart` component we created earlier, and use it to render the chart.
+- We expose the `scores` prop, which is an array of `Score` objects.
+- We sort the scores by `createdAt`, and map the `x` values to the `createdAt` date, and the `y` values to the `score`.
+- We create a `chartData` object that contains the data for the chart, including the labels for the x-axis and the datasets for the y-axis.
+- We define the chart options, including the x-axis type as `time`, and the date adapter for the `nl` locale (Dutch).
+
+Next, we can use this `ScoreOverTimeInSessionChart` component in `/src/routes/dashboard/session/[id]/+page.svelte` to display the scores achieved in a session over time:
+
+```svelte
+<!-- /src/routes/dashboard/session/[id]/+page.svelte -->
+
+<script lang="ts">
+    ...	
+	import ScoreOverTimeInSessionChart from '$lib/ui/views/charts/ScoreOverTimeInSessionChart.svelte';
+    
+    ...
+</script>
+
+<div class="m-auto grid grid-cols-1 gap-4 lg:grid-cols-2">
+	<Card>
+		...	
+    </Card>
+
+	<Card>
+	    ...	
+	</Card>
+	<Card baseExtension="lg:col-span-2 !max-w-full">
+		{#snippet header()}
+			<h1>Score over time</h1>
+		{/snippet}
+		{#snippet article()}
+			<div class="justify-center">
+				<ScoreOverTimeInSessionChart scores={data.scoresInSession} />
+			</div>
+		{/snippet}
+	</Card>
+</div>
+```
+
+And just like that, we have a neat chart mapping the score over time in a session!
+
+![[charthover.gif]]
+
+To ensure this wasn't a fluke, let's also implement a chart for the user detail page, showing the average score per session over time.
+
+We'll create a new `AverageScoreOverTimeForUserChart.svelte` component in `/src/lib/ui/views/charts/AverageScoreOverTimeForUserChart.svelte`.
+This is largely a duplicate of the previous chart, but we'll be using the `SessionWithAverageScore` type instead of the `Score` type, and we'll be mapping the `averageScore` to the `y` value instead of the `score` (and altering it's label).
+
+```svelte
+<script lang="ts">
+    ...
+	import type { SessionWithAverageScore } from '$lib/server/dao/SessionDAO';
+
+	let { scores: sessions }: { scores: SessionWithAverageScore[] } = $props();
+
+	// We sort the scores by createdAt,
+	// then map the x values to the createdAt,
+	// and the y values to the score.
+	const inData = sessions
+		.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+		.map((score) => {
+			return {
+				x: score.createdAt,
+				y: score.averageScore
+			};
+		});
+
+	const chartData = {
+	    ...,
+		data: {
+		    ...,
+			datasets: [
+				{
+					label: 'Average Score',
+					data: inData.map((score) => score.y)
+				}
+			]
+		},
+		...	
+    };
+</script>
+
+<Chart type={chartData.type} data={chartData.data} options={chartData.options} />
+```
+
+Adding it to the user detail page is similar to the previous chart, so we won't go into too much detail here either:
+
+```svelte
+<!-- /src/routes/dashboard/user/[id]/+page.svelte -->
+
+<script lang="ts">
+    ...
+    import AverageScoreOverTimeForUserChart from '$lib/ui/views/charts/AverageScoreOverTimeForUserChart.svelte';
+    ...
+</script>
+
+<div class="...">
+	<Card>
+	    ...	
+	</Card>
+
+	<Card>
+	    ...	
+	</Card>
+	<Card baseExtension="lg:col-span-2 !max-w-full">
+		{#snippet header()}
+			<h1>Average score over time</h1>
+		{/snippet}
+		{#snippet article()}
+			<div class="justify-center">
+				<AverageScoreOverTimeForUserChart scores={data.sessionsByUser} />
+			</div>
+		{/snippet}
+	</Card>
+</div>
+```
+
+### Dashboard overview
+
+
