@@ -1971,6 +1971,124 @@ Adding it to the user detail page is similar to the previous chart, so we won't 
 </div>
 ```
 
-### Dashboard overview
+### Retouching the Dashboard Overview Page
+
+Most of our pages look pretty good now, but we haven't retouched our dashboard overview page yet.
+
+Let's do that now to wrap this chapter up.
+Along with our `TopScorers` list we will add a list of all users in the database.
+Furthermore, we will use our new Table component to display these lists in a more presentable way.
+
+First, let's expand the `/src/routes/dashboard/page.server.ts` file to query the database for all users (we've already implemented the relevant query in the UserDAO):
+
+```ts
+// /src/routes/dashboard/+page.server.ts
+
+...
+import { UserDAO } from '$lib/server/dao/UserDAO';
+import type { User } from '$lib/server/db/schema';
+
+export const load: PageServerLoad = async () => {
+	const limit: number = 10;
+	const users: User[] = await UserDAO.getAllUsers();
+	const topScorers: TopScorer[] = await ScoreDAO.getTopScorers(limit);
+
+	return {
+		users,
+		topScorers
+	};
+};
+```
+
+And then update the `/src/routes/dashboard/+page.svelte` file to display the users in a Table, along with the top scorers:
+
+```svelte
+<!-- /src/routes/dashboard/+page.svelte -->
+
+<script lang="ts">
+	import type { TopScorer } from '$lib/server/dao/ScoreDAO';
+	import type { User } from '$lib/server/db/schema';
+	import Card from '$lib/ui/views/Card.svelte';
+	import type { TableData } from '$lib/ui/views/Table.svelte';
+	import Table from '$lib/ui/views/Table.svelte';
+	import { ageFromDateOfBirth } from '$lib/utils/date.js';
+
+	const { data } = $props();
+
+	const topScoreTable: TableData = $derived({
+		caption:
+			'A list of the top 10 users who have the highest scores.\nClick to view the session in which they achieved it.',
+		columns: [
+			'Ranking',
+			'Username',
+			'Level ID',
+			'Score',
+			'Accuracy',
+			'Time Taken',
+			'Created At',
+			'Session ID'
+		],
+		rows: data.topScorers.map((score: TopScorer, index: number) => ({
+			values: [
+				index + 1,
+				score.user.username,
+				score.score.levelId,
+				score.score.score,
+				score.score.accuracy,
+				score.score.timeTaken,
+				score.score.createdAt.toLocaleString(),
+				score.session.id
+			],
+			url: `/dashboard/session/${score.session.id}`
+		})),
+		paginationOptions: { enabled: false }
+	});
+
+	const userTable: TableData = $derived({
+		caption: 'A list of users.\nClick to view their profile.',
+		columns: ['Username', 'Age', 'Created At'],
+		rows: data.users.map((user: User) => ({
+			values: [
+				user.username,
+				ageFromDateOfBirth(user.dateOfBirth),
+				user.createdAt.toLocaleDateString()
+			],
+			url: `/dashboard/user/${user.id}`
+		}))
+	});
+</script>
+
+<div class="mx-auto grid grid-cols-1 gap-y-4">
+	<Card baseExtension="!max-w-full w-6xl">
+		{#snippet header()}
+			<h1>Top 10 Users</h1>
+		{/snippet}
+		{#snippet article()}
+			<Table table={topScoreTable} />
+		{/snippet}
+	</Card>
+	<Card baseExtension="!max-w-full w-6xl">
+		{#snippet header()}
+			<h1>Users</h1>
+		{/snippet}
+		{#snippet article()}
+			<Table table={userTable} />
+		{/snippet}
+	</Card>
+</div>
+
+```
+
+Key points to note here:
+- We create two `TableData` objects, one for the top scorers and one for the users.
+- We disable pagination for the top scorers table, as we only want to show the top 10 users.
+- We add an index to the top scorers table to display the ranking of each user.
+- We set the `url` property for each row, so that clicking on a row navigates to the relevant user (usertable) or session detail page in which the top score was achieved (top scorers table).
+- We use the `ageFromDateOfBirth` utility function to calculate the age of the user based on their date of birth.
+
+Cool. We now have a nice overview page that takes us to the user detail page when clicking on a user, and to the session detail page when clicking on a top scorer.
+
+![[dashboard-overview.gif]]
+
 
 
