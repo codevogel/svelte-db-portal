@@ -1336,7 +1336,7 @@ We should now see a neat User Profile section and a table providing an overview 
 
 ![[user-details.png]]
 
-### Displaying scores per session in a table
+#### Displaying scores per session in a table
 
 Let's display some information about a session, and the scores achieved in that session.
 Our workflow will be similar to the previous section, but instead of displaying information about a users' sessions, we will display information about a single session, and the scores achieved in that session.
@@ -1543,11 +1543,171 @@ And then we use them in the `+page.svelte` files for the user and session detail
 	
     ...
 
-	const sessionEnd = $derived(dateAddSeconds(session.createdAt, session.duration));	
+	const sessionEnd = $derived(dateAddSeconds(session.createdAt, session.duration));
 </script>
 
 ...
 ```
 
 Now our page code doesn't need to worry about the implementation details of how the session end time or user age is calculated, and we can reuse these utility functions in other parts of our application as well.
+
+### Table Pagination
+
+As sessions and users grow in number over time, we may want to implement pagination for our tables, so that a user isn't overwhelmed by too much data at once. 
+We can implement this by adding the Skeleton [`pagination` component](https://www.skeleton.dev/docs/components/pagination/svelte).
+
+First we'll implement some typescript for the pagination functionality:
+- import the component and some icons from `lucide-svelte`
+- define a `PaginationOptions` interface to configure the pagination behavior
+- add the `paginationOptions` property to the `TableData` interface 
+- define some default values for the pagination options
+- define some reactive state variables to hold the current page, page size, and whether pagination is enabled
+- created a derived sliced array of the source data, which holds the content that should be displayed on the current page
+
+```svelte
+<!-- /src/lib/ui/views/Table.svelte -->
+<script lang="ts">
+	...
+
+	import { Pagination } from '@skeletonlabs/skeleton-svelte';
+	import { ArrowLeft, ArrowRight, ChevronFirst, ChevronLast, Ellipsis } from 'lucide-svelte';
+
+	export interface TableData {
+		...,
+		paginationOptions?: PaginationOptions;
+	}
+
+	...
+
+	export interface PaginationOptions {
+		enabled?: boolean;
+		page?: number;
+		size?: number;
+		sizePerPage?: number[];
+	}
+
+	const paginationDefaults: PaginationOptions = {
+		enabled: true,
+		page: 1,
+		size: 10,
+		sizePerPage: [5, 10]
+	};
+
+	let { table }: { table: TableData } = $props();
+
+
+	// State
+	// We pick the pagination options from the table, or use the defaults if not provided
+	let page = $state(table.paginationOptions?.page ?? paginationDefaults.page!);
+	let size = $state(table.paginationOptions?.size ?? paginationDefaults.size!);
+	let enabled = $state(table.paginationOptions?.enabled ?? paginationDefaults.enabled!);
+	let sizePerPage = $state(table.paginationOptions?.sizePerPage ?? paginationDefaults.sizePerPage!);
+
+	const slicedSource = $derived((source: TableRow[]) =>
+		enabled ? source.slice((page - 1) * size, page * size) : source
+	);
+</script>
+```
+
+Next, we'll alter the `Table` markup to:
+- loop over the `slicedSource` rather than the full `table.rows` to only display the rows for the current page 
+- expand the `Table` markup to include the pagination controls, which will be displayed in the footer of the table
+	- in the `onchange` events we update the state variables, which will trigger a re-render of the component with the new page or page size
+
+```svelte
+<!-- /src/lib/ui/views/Table.svelte -->
+
+<section class="...">
+	<!-- Table -->
+	<div class="...">
+		<table class="...">
+			...	
+			<tbody class="...">
+				{#each slicedSource(table.rows) as row, index (index)}
+					<tr
+						onclick={() => (row.url ? goto(row.url) : null)}
+						class={row.url ? 'cursor-pointer' : ''}
+					>
+						{#each row.values as value, i (i)}
+							<td>{value}</td>
+						{/each}
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+	{#if enabled}
+		<!-- Footer -->
+		<footer class="flex justify-between">
+			<select
+				name="size"
+				id="size"
+				class="select w-fit max-w-[150px] px-2"
+				value={size}
+				onchange={(e) => (size = Number(e.currentTarget.value))}
+			>
+				{#each sizePerPage as v, i (i)}
+					<option value={v}>{v} Per Page</option>
+				{/each}
+				<option value={table.rows.length}>Show All</option>
+			</select>
+			<!-- Pagination -->
+			<Pagination
+				data={table.rows}
+				{page}
+				onPageChange={(e) => (page = e.page)}
+				pageSize={size}
+				onPageSizeChange={(e) => (size = e.pageSize)}
+				siblingCount={4}
+			>
+				{#snippet labelEllipsis()}<Ellipsis class="size-4" />{/snippet}
+				{#snippet labelNext()}<ArrowRight class="size-4" />{/snippet}
+				{#snippet labelPrevious()}<ArrowLeft class="size-4" />{/snippet}
+				{#snippet labelFirst()}<ChevronFirst class="size-4" />{/snippet}
+				{#snippet labelLast()}<ChevronLast class="size-4" />{/snippet}
+			</Pagination>
+		</footer>
+	{/if}
+</section>
+```
+
+Now, to use the pagination functionality, we can simply pass the `paginationOptions` property to the `TableData` object. 
+
+For example, to set our Session table in `/src/routes/dashboard/user/[id]/+page.svelte` to only show 3 sessions per page, we can do the following:
+
+```svelte
+<script lang="ts">
+	...
+
+	const table: TableData = $derived({
+		...,	
+		paginationOptions: {
+			// Show 3 sessions per page by default
+			size: 3, 
+			// Pass 3 as an option for the dropdown that allows the user to change the page size
+			sizePerPage: [3, 5, 10], 
+		}
+	});
+</script>
+```
+
+![[pagination.gif]]
+
+We can also choose to disable the feature we just added for specific tables by setting the `enabled` property to `false` in the `paginationOptions`.
+For example, to disable pagination on the user and session search results:
+
+```svelte
+<!-- /src/routes/dashboard/user/+page.svelte AND /src/routes/dashboard/session/+page.svelte -->
+<script lang="ts">
+	...
+
+	let table = $derived({
+		...	
+		paginationOptions: {
+			enabled: false
+		}
+	});
+</script>
+```
+
 
