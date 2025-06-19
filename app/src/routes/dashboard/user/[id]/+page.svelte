@@ -65,4 +65,14 @@
 			<Table {table} />
 		{/snippet}
 	</Card>
+	<Card baseExtension="lg:col-span-2 !max-w-full">
+		{#snippet header()}
+			<h1>Average score over time</h1>
+		{/snippet}
+		{#snippet article()}
+			<div class="justify-center">
+				<AverageScoreOverTimeForUserChart scores={data.sessionsByUser} />
+			</div>
+		{/snippet}
+	</Card>
 </div>

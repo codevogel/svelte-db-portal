@@ -6,8 +6,9 @@
 	import Table from '$lib/ui/views/Table.svelte';
 	import type { Score } from '$lib/server/db/schema';
 	import type { SessionWithUser } from '$lib/server/dao/SessionDAO.js';
-	import { dateAddSeconds } from '$lib/utils/date'; 
-	
+	import { dateAddSeconds } from '$lib/utils/date';
+	import ScoreOverTimeInSessionChart from '$lib/ui/views/charts/ScoreOverTimeInSessionChart.svelte';
+
 	let { data } = $props();
 
 	const session: SessionWithUser = $derived(data.session);
@@ -27,7 +28,7 @@
 		}))
 	});
 
-	const sessionEnd = $derived(dateAddSeconds(session.createdAt, session.duration));	
+	const sessionEnd = $derived(dateAddSeconds(session.createdAt, session.duration));
 </script>
 
 <div class="m-auto grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -55,6 +56,16 @@
 		{/snippet}
 		{#snippet article()}
 			<Table {table} />
+		{/snippet}
+	</Card>
+	<Card baseExtension="lg:col-span-2 !max-w-full">
+		{#snippet header()}
+			<h1>Score over time</h1>
+		{/snippet}
+		{#snippet article()}
+			<div class="justify-center">
+				<ScoreOverTimeInSessionChart scores={data.scoresInSession} />
+			</div>
 		{/snippet}
 	</Card>
 </div>
