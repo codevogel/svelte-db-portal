@@ -1115,14 +1115,14 @@ Similarly, we can implement the Table into our `/dashboard/session/+page.svelte`
 
 ```ts
 let table = $derived({
-columns: ['ID', 'Username'],
-		rows: sessionResults?.map((session) => {
-			return {
-				values: [session.id, session.username],
-				url: `/dashboard/session/${session.id}`
-			};
-		})
-	});
+	columns: ['ID', 'Username'],
+	rows: sessionResults?.map((session) => {
+	return {
+		values: [session.id, session.user.username],
+		url: `/dashboard/session/${session.id}`
+	};
+	})
+});
 ```
 
 #### Displaying user sessions with an average score table
