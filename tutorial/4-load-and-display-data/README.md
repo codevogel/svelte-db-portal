@@ -6,7 +6,18 @@ In this chapter, we will learn how to use these queries to load the data from th
 ## Chapter overview
 
 ### Learning goals
-
+By the end of this chapter, you will be able to:
+- Understand and use the load function in SvelteKit to preload data for your pages.
+- Distinguish between universal and server-only load functions.
+- Query data from a database using Drizzle ORM and safely pass it into your frontend.
+- Create and use Data Access Objects (DAOs) to encapsulate and modularize query logic.
+- Use route parameters and URL queries to implement dynamic and responsive data loading.
+- Handle errors gracefully using SvelteKit’s error handling mechanisms.
+- Display data in various formats:
+    - Basic component-based rendering.
+    - Reusable table components with optional pagination.
+    - Dynamic charts using Chart.js for visual insights.
+- Extract utility functions to promote reuse and clarity in your codebase.
 
 ### Prerequisites
 
@@ -2090,5 +2101,76 @@ Cool. We now have a nice overview page that takes us to the user detail page whe
 
 ![[dashboard-overview.gif]]
 
+### Retouching the About Us section
 
+This section isn't really about data visualization, but rather about polishing our application a bit more.
+Our site is, visually, almost complete. Let's quickly throw together a nicer looking "About Us" page, as that is the only page that we haven't touched yet.
 
+To this section, we'll add a text section with some information about the application, and some information about the authentication system that we'll create in the next chapter.
+
+```svelte
+<!-- /src/routes/about/+page.svelte -->
+<script lang="ts">
+	import Card from '$lib/ui/views/Card.svelte';
+	import { gameName, adminEmail } from '$lib/stores/projectInfo';
+</script>
+
+<div class="flex h-full items-center justify-center p-4">
+	<Card>
+		{#snippet header()}
+			<h1 class="text-center text-2xl font-bold">About</h1>
+		{/snippet}
+		{#snippet article()}
+			<p>
+				This website functions as a web portal to a database for the game '{$gameName}'.
+			</p>
+			<p>
+				To gain access to the database, please log in using your GitHub account. Note that your
+				GitHub account has to be whitelisted by the site administrator in order to access this
+				website.
+			</p>
+			<p>
+				You can contact the administrator via email at {$adminEmail}.
+			</p>
+
+			<p>
+				Once logged in, you can view the <a href="/dashboard" class="text-primary-500">dashboard</a
+				>, which provides an overview of the database. There, you can also view data about specific
+				<a href="/dashboard/user" class="text-primary-500">users</a>
+				or <a href="/dashboard/session" class="text-primary-500">sessions</a>.
+			</p>
+		{/snippet}
+	</Card>
+</div>
+```
+
+We'll need to add the `adminEmail` to the `/src/lib/stores/projectInfo.ts` file, so that we can use it in the `About` page:
+
+```ts
+// /src/lib/stores/projectInfo.ts
+
+...
+export const adminEmail: Readable<string> = readable('demo@admin.com');
+```
+
+And now we have this nice card on our About page:
+
+![[about.png]]
+
+## Wrapping up
+
+In this chapter, we've nearly completed our application, loading our data from the database and displaying it in a user-friendly way.
+
+We've learned how to:
+
+- Load data into pages using the `load` function.
+- Write clean, organized queries using DAOs (Data Access Objects).
+- Handle route parameters and URL queries to load specific data.
+- Display information using tables and charts that are both functional and visually clear.
+- Make the app feel faster and more interactive with responsive search.
+- Deal with errors gracefully, so users get helpful feedback when something goes wrong.
+
+By now, we’ve connected the dots between our database and our UI — and made sure your users can actually see and interact with the data you’ve stored.
+
+Next up, we’ll go beyond reading data — and explore how we can build a secure authentication system to manage who can access our application.
+Refer to [Chapter 5: Authentication](/tutorial/5-authentication/README.md) to learn how to implement authentication in your SvelteKit application.
