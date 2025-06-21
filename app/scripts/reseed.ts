@@ -60,6 +60,9 @@ async function reseed_db() {
 		levels: {
 			count: 5
 		},
+		authSessions: {
+			count: 0
+		},
 		scores: {
 			columns: {
 				score: f.number({ minValue: 0, maxValue: 5000 }),
