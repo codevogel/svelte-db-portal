@@ -2112,7 +2112,7 @@ To this section, we'll add a text section with some information about the applic
 <!-- /src/routes/about/+page.svelte -->
 <script lang="ts">
 	import Card from '$lib/ui/views/Card.svelte';
-	import { gameName, adminEmail } from '$lib/stores/projectInfo';
+	import { GAME_NAME, ADMIN_EMAIL } from '$lib/constants/strings';
 </script>
 
 <div class="flex h-full items-center justify-center p-4">
@@ -2122,7 +2122,7 @@ To this section, we'll add a text section with some information about the applic
 		{/snippet}
 		{#snippet article()}
 			<p>
-				This website functions as a web portal to a database for the game '{$gameName}'.
+				This website functions as a web portal to a database for the game '{GAME_NAME}'.
 			</p>
 			<p>
 				To gain access to the database, please log in using your GitHub account. Note that your
@@ -2130,7 +2130,7 @@ To this section, we'll add a text section with some information about the applic
 				website.
 			</p>
 			<p>
-				You can contact the administrator via email at {$adminEmail}.
+				You can contact the administrator via email at {ADMIN_EMAIL}.
 			</p>
 
 			<p>
@@ -2144,13 +2144,14 @@ To this section, we'll add a text section with some information about the applic
 </div>
 ```
 
-We'll need to add the `adminEmail` to the `/src/lib/stores/projectInfo.ts` file, so that we can use it in the `About` page:
+We'll need to add the `ADMIN_EMAIL` to the `/src/lib/constants/strings.ts` file, so that we can use it in the `About` page:
 
 ```ts
-// /src/lib/stores/projectInfo.ts
+// /src/lib/constants/strings.ts
 
 ...
-export const adminEmail: Readable<string> = readable('demo@admin.com');
+
+export const ADMIN_EMAIL = 'demo@admin.com';
 ```
 
 And now we have this nice card on our About page:

@@ -16,7 +16,7 @@ At the end of this chapter, you will be able to:
 - Understand how to use Typescript in Svelte components.
 - Understand how the `$state` and `$derived` runes work in svelte to create reactive variables and derived state.
 - Understand how to use the `$props()` rune to pass data between components.
-- Understand how to create Stores in Svelte to share reactive data across components.
+- Understand how re-use strings across components. 
 
 At the end of this chapter, you will have created:
 - A Svelte application with basic layout and routing.
@@ -610,31 +610,47 @@ Let's do the same for our `src/routes/dashboard/+layout.svelte` file, so that we
 ```
 
 Okay, that looks much better. But the keen eyed among you may have noticed that we have now re-introduced an earlier problem. The `pages` array is now stored in two different places, and neither of them should really be responsible for storing the navigation data anyway.
-Let's fix that using stores.
+Let's fix that using constants.
 
-## Svelte stores 
+## Reusing immutable values across components 
 
-Svelte [stores](https://svelte.dev/docs/svelte/stores) are a way to share reactive data across components. Although most of it's reactive usecases have been subceeded by the arrival of `runes` in Svelte 5, in this case they're a nice way to store our navigation data in a single place, so we can easily access it from anywhere else.
+We have a few immutable values in our application, such as the `pages` array and the `dashboardPages` array. We can store these in a separate file and import them into our components, so that we can re-use them across our application without duplicating the data.
 
-Let's create a `readable` store for our `pages` arrays at `src/lib/stores/navigation.ts`:
+Let's create a new file at `src/lib/constants/navigation.ts` and define our `PAGES` and `DASHBOARD_PAGES` constants there: 
 
 ```typescript
+// /src/lib/constants/navigation.ts
 
-// /src/lib/stores/navigation.ts
+import { PanelsTopLeft, User, Dumbbell } from 'lucide-svelte';
+import type { PageInfo } from '$lib/types/pageInfo';
 
-import { readable, type Readable } from "svelte/store";
-
-export const pages: Readable<PageInfo[]> = readable([
+export const PAGES: PageInfo[] = [
 	{ name: 'Home', url: '/', description: 'The home page.' },
-	{ name: 'About Us', url: '/about', description: 'Learn more about us.' },
-	{ name: 'Dashboard', url: '/dashboard', description: 'View the dashboard.' }
-]);
+	{ name: 'Dashboard', url: '/dashboard', description: 'View the dashboard.' },
+	{ name: 'About Us', url: '/about', description: 'Learn more about us.' }
+];
 
-export const dashboardPages: Readable<PageInfo[]> = readable([
-	{ name: 'Overview', url: '/dashboard/', description: 'Dashboard overview.' },
-	{ name: 'User', url: '/dashboard/user', description: 'Query user information' },
-	{ name: 'Session', url: '/dashboard/session', description: 'View session details.' }
-]);
+export const DASHBOARD_PAGES: PageInfo[] = [
+	{
+		name: 'Overview',
+		url: '/dashboard/',
+		description: 'Dashboard overview.',
+		icon: PanelsTopLeft
+	},
+	{
+		name: 'User',
+		url: '/dashboard/user',
+		description: 'Query user information',
+		icon: User
+	},
+	{
+		name: 'Session',
+		url: '/dashboard/session',
+		description: 'View session details.',
+		icon: Dumbbell
+	}
+];
+
 ```
 
 And use the stores in our `+layout.svelte` files instead (note the `$` prefix to access the store's value):
@@ -645,12 +661,12 @@ And use the stores in our `+layout.svelte` files instead (note the `$` prefix to
 <script lang="ts">
 	import '../app.css';
 	import NavBar from '$lib/ui/nav/NavBar.svelte';
-	import { pages } from '$lib/stores/navigation';
+	import { PAGES } from '$lib/constants/navigation';
 
 	let { children } = $props();
 </script>
 
-<NavBar pages={$pages} />
+<NavBar pages={PAGES} />
 {@render children()}
 
 
@@ -658,20 +674,20 @@ And use the stores in our `+layout.svelte` files instead (note the `$` prefix to
 
 <script lang="ts">
 	import NavBar from '$lib/ui/nav/NavBar.svelte';
-	import { dashboardPages } from '$lib/stores/navigation';
+	import { DASHBOARD_PAGES } from '$lib/constants/navigation';
 
 	let { children } = $props();
 </script>
 
 <h1 class="text-3xl font-bold">Dashboard.</h1>
 
-<NavBar pages={$dashboardPages} />
+<NavBar pages={DASHBOARD_PAGES} />
 
 <!-- Here, the content from the sub-routes renders -->
 {@render children()}
 ```
 
-Now we have a single source for our navigation data. We can easily add or remove pages from the store, and re-use the `NavBar` component across our root and dashboard `+layout.svelte` files without duplicating the navigation data.
+Now we have a single source for our navigation data. We can easily add or remove pages from the `navigation.ts` file, and re-use the `NavBar` component across our root and dashboard `+layout.svelte` files without duplicating the navigation data.
 
 ## Wrapping up
 
@@ -684,7 +700,7 @@ We now know how to:
 - Use TypeScript in Svelte components to add type safety.
 - Use the `$state` and `$derived` runes to create reactive variables and derived state.
 - Use the `$props()` rune to pass data between components.
-- Use Svelte stores to share reactive data across components.
+- Re-use immutable data across components using constants.
 
 We have also built a simple web portal with a home page, an about page, and a dashboard with user and session pages, all using SvelteKit and Tailwind CSS.
 

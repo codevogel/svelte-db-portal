@@ -242,19 +242,19 @@ We'll also import the `ThemeSwitch` into our `src/routes/+layout.svelte` file:
 <script lang="ts">
 	import '../app.css';
 	import NavBar from '$lib/ui/nav/NavBar.svelte';
-	import { pages } from '$lib/stores/navigation';
+	import { PAGES } from '$lib/constants/navigation';
 	import ThemeSwitch from '$lib/ui/control/ThemeSwitch.svelte';
 
 	let { children } = $props();
 </script>
 
 <ThemeSwitch />
-<NavBar pages={$pages} />
+<NavBar pages={PAGES} />
 {@render children()}
 ```
 
 
-#### Theme Store
+#### Theme Constants
 
 First, for type safety, we will add a new Type `Theme` in `src/lib/types/theme.ts`
 
@@ -266,23 +266,22 @@ export interface Theme {
 }
 ```
 
-Next, we will create a store that holds the available themes. This will allow us to easily access the themes throughout our application and ensure that we can update the list of themes in one place if needed.
+Next, we will create a file that holds the available themes. This will allow us to easily access the themes throughout our application and ensure that we can update the list of themes in one place if needed.
 
 ```typescript
-// /src/lib/stores/theme.ts
+// /src/lib/constants/themes.ts
 
 import type { Theme } from '$lib/types/theme';
-import { readable, type Readable } from 'svelte/store';
 
 // The label is the display name of the theme, 
 // while the value is the actual theme name used 
 // in the `data-theme` attribute.
-export const themes: Readable<Theme[]> = readable([
+export const THEMES: Theme[] = [
 	{ label: '🐱 Catppuccin', value: 'catppuccin' },
 	{ label: '🐺 Cerberus', value: 'cerberus' },
 	{ label: '📺 Vintage', value: 'vintage' },
 	{ label: '💮 Modern', value: 'modern' }
-]);
+];
 ```
 
 #### Theme Switcher Markup
@@ -290,7 +289,7 @@ Let's use this store in our `ThemeSwitch` component.
 
 ```svelte
 <script lang="ts">
-	import { themes } from '$lib/stores/theme';
+	import { THEMES } from '$lib/constants/themes';
 	...
 </script>
 
@@ -305,7 +304,7 @@ Let's use this store in our `ThemeSwitch` component.
 			<!-- We couple the onchange event to a function handleThemeSelect, which we will create later -->
 			<select class="select" bind:value={selectedTheme} onchange={handleThemeSelect}>
 				<!-- Loop through the themes store to create an option for each theme -->
-				{#each $themes as theme (theme.value)}
+				{#each THEMES as theme (theme.value)}
 					<option value={theme.value}>{theme.label}</option>
 				{/each}
 			</select>
@@ -458,7 +457,7 @@ Awesome. Now our `ThemeSwitch` component is fully functional. If you got lost al
 <!-- src/lib/ui/control/ThemeSwitch.svelte -->
 
 <script lang="ts">
-	import { themes } from '$lib/stores/theme';
+	import { THEMES } from '$lib/constants/themes';
 	import { Popover, Switch } from '@skeletonlabs/skeleton-svelte';
 	import { X, Palette } from 'lucide-svelte';
 	import { onMount } from 'svelte';
@@ -527,8 +526,8 @@ Awesome. Now our `ThemeSwitch` component is fully functional. If you got lost al
 					<!-- Dropdown to select a theme from the available themes in the store -->
 					<!-- The value of the select is bound to selectedTheme -->
 					<select class="select" bind:value={selectedTheme} onchange={handleThemeSelect}>
-						<!-- Loop through the themes store to create an option for each theme -->
-						{#each $themes as theme (theme.value)}
+						<!-- Loop through the themes to create an option for each theme -->
+						{#each THEMES as theme (theme.value)}
 							<option value={theme.value}>{theme.label}</option>
 						{/each}
 					</select>
@@ -562,7 +561,7 @@ We'll base our website on the [One Column layout](https://www.skeleton.dev/docs/
 <script lang="ts">
 	import '../app.css';
 	import NavBar from '$lib/ui/nav/NavBar.svelte';
-	import { pages } from '$lib/stores/navigation';
+	import { PAGES } from '$lib/constants/navigation';
 
 	let { children } = $props();
 </script>
@@ -570,7 +569,7 @@ We'll base our website on the [One Column layout](https://www.skeleton.dev/docs/
 <div class="grid min-h-screen grid-rows-[auto_1fr_auto]">
 	<!-- Header -->
 	<header>
-		<NavBar pages={$pages} />
+		<NavBar pages={PAGES} />
 	</header>
 	<!-- Page -->
 	<main class="space-y-4">
@@ -650,7 +649,7 @@ Let's start with the markup for our small screen NavBar. We'll use the [Modal](h
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import { ArrowLeft, DatabaseZap, Menu } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
-	import { pages } from '$lib/stores/navigation';
+	import { PAGES } from '$lib/constants/navigation';
 	import ThemeSwitch from '$lib/ui/control/ThemeSwitch.svelte';
 
 	let drawerState = $state(false);
@@ -691,7 +690,7 @@ Let's start with the markup for our small screen NavBar. We'll use the [Modal](h
 				</header>
 				<hr class="hr my-2" />
 				<article class="flex flex-col">
-					{#each $pages as page, index (page.name)}
+					{#each PAGES as page, index (page.name)}
 						<button
 							class="btn hover:preset-tonal h5 justify-start"
 							onclick={() => onNavItemClick(page.url)}
@@ -700,7 +699,7 @@ Let's start with the markup for our small screen NavBar. We'll use the [Modal](h
 								{page.name}
 							</h5>
 						</button>
-						{#if index < $pages.length - 1}{/if}
+						{#if index < PAGES.length - 1}{/if}
 					{/each}
 				</article>
 			{/snippet}
@@ -725,7 +724,7 @@ Key points to note here:
 - We've removed the `pages` prop from the `NavBar` component, as we won't be reusing this component in other places, like we were earlier (in the dashboard). (Not shown here is that we removed the `pages` prop from the `NavBar` component in `src/routes/+layout.svelte` as well.)
 - We use the `Modal` component from Skeleton to create a side-bar navigation that opens when the hamburger menu is clicked.
 - The `trigger` snippet contains the hamburger menu icon, which opens the modal when clicked.
-- The `content` snippet contains the contents of the side bar, in which we list the pages from our `pages` store.
+- The `content` snippet contains the contents of the side bar, in which we list the pages from our `navigation.ts` 
 - Clicking on a page link in the side bar will close the side bar before navigating to the requested page.
 - We divide the `NavBar` into a five column grid, with the navigation section taking up three columns, and the logo and theme switch taking up one column each.
 - We use Lucide icons for the website logo (`DatabaseZap`), the hamburger menu (`Menu`), and the back button (`ArrowLeft`). 
@@ -782,7 +781,7 @@ Again, here's the full code if you got a little lost along the way:
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import { ArrowLeft, DatabaseZap, Menu } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
-	import { pages } from '$lib/stores/navigation';
+	import { PAGES } from '$lib/constants/navigation';
 	import ThemeSwitch from '$lib/ui/control/ThemeSwitch.svelte';
 
 	let drawerState = $state(false);
@@ -823,7 +822,7 @@ Again, here's the full code if you got a little lost along the way:
 				</header>
 				<hr class="hr my-2" />
 				<article class="flex flex-col">
-					{#each $pages as page, index (page.name)}
+					{#each PAGES as page, index (page.name)}
 						<button
 							class="btn hover:preset-tonal h5 justify-start"
 							onclick={() => onNavItemClick(page.url)}
@@ -832,7 +831,7 @@ Again, here's the full code if you got a little lost along the way:
 								{page.name}
 							</h5>
 						</button>
-						{#if index < $pages.length - 1}{/if}
+						{#if index < PAGES.length - 1}{/if}
 					{/each}
 				</article>
 			{/snippet}
@@ -853,7 +852,7 @@ Again, here's the full code if you got a little lost along the way:
 			>
 		</button>
 		<span class="hidden md:flex md:justify-center">
-			{#each $pages as page (page.name)}
+			{#each PAGES as page (page.name)}
 				<button class="btn hover:preset-tonal h5 justify-start" onclick={() => goto(page.url)}>
 					<h5 class="h5">
 						{page.name}
@@ -882,7 +881,7 @@ For larger screens, we want to switch to [`Rail` navigation](https://www.skeleto
 
 ![[rail-nav.png]]
 
-First, let's expand the `navigation` store (and `PageInfo` interface) to include Lucide icons we can display for each page:
+First, let's expand the `navigation.ts` file (and `PageInfo` interface) to include Lucide icons we can display for each page:
 
 ```typescript
 // src/lib/types/pageInfo.ts
@@ -897,27 +896,32 @@ export interface PageInfo {
 }
 
 
-// /src/lib/stores/navigation.ts
+// /src/lib/constants/navigation.ts
 
 import { PanelsTopLeft, User, Dumbbell } from 'lucide-svelte';
 
 ...
 
-export const dashboardPages: Readable<PageInfo[]> = readable([
+export const DASHBOARD_PAGES: PageInfo[] = [
 	{
 		name: 'Overview',
 		url: '/dashboard/',
 		description: 'Dashboard overview.',
 		icon: PanelsTopLeft
 	},
-	{ name: 'User', url: '/dashboard/user', description: 'Query user information', icon: User },
+	{
+		name: 'User',
+		url: '/dashboard/user',
+		description: 'Query user information',
+		icon: User
+	},
 	{
 		name: 'Session',
 		url: '/dashboard/session',
 		description: 'View session details.',
 		icon: Dumbbell
 	}
-]);
+];
 ```
 
 Now, let's alter `src/routes/dashboard/+layout.svelte` to use the `Rail` and `Bar` navigation components, hiding the `Rail` navigation on smaller screens, and showing the `Bar` navigation on larger screens.
@@ -928,7 +932,7 @@ Now, let's alter `src/routes/dashboard/+layout.svelte` to use the `Rail` and `Ba
 <script lang="ts">
 	import { Navigation } from '@skeletonlabs/skeleton-svelte';
 	import { page } from '$app/state';
-	import { dashboardPages } from '$lib/stores/navigation';
+	import { DASHBOARD_PAGES } from '$lib/constants/navigation';
 
 	let value = $state('overview');
 
@@ -943,7 +947,7 @@ Now, let's alter `src/routes/dashboard/+layout.svelte` to use the `Rail` and `Ba
 	<aside class="hidden lg:sticky lg:block">
 		<Navigation.Rail {value} onValueChange={(newValue) => (value = newValue)}>
 			{#snippet tiles()}
-				{#each $dashboardPages as dashboardPage (dashboardPage.name)}
+				{#each DASHBOARD_PAGES as dashboardPage (dashboardPage.name)}
 					<Navigation.Tile
 						href={dashboardPage.url}
 						label={dashboardPage.name}
@@ -963,7 +967,7 @@ Now, let's alter `src/routes/dashboard/+layout.svelte` to use the `Rail` and `Ba
 	<!-- This is the bar for smaller screens -->
 	<aside class="block lg:hidden">
 		<Navigation.Bar classes="max-h-24" {value} onValueChange={(newValue) => (value = newValue)}>
-			{#each $dashboardPages as dashboardPage (dashboardPage.name)}
+			{#each DASHBOARD_PAGES as dashboardPage (dashboardPage.name)}
 				<Navigation.Tile
 					href={dashboardPage.url}
 					label={dashboardPage.name}
@@ -989,7 +993,7 @@ Key points to note here:
 - We show and hide the small screen `Bar` navigation using `block lg:hidden`
 - We use the `value` state variable to keep track of the currently selected page, and update it when the user clicks on a navigation item.
 - We use the `currentPageUrl` (which is derived from [the 'page' state](https://svelte.dev/docs/kit/$app-state#page)) to determine the page that is currently being viewed, and highlight the corresponding navigation item by setting the `selected` prop on the `Navigation.Tile` component to true.
-- We directly use the `dashboardPage.icon` as a component in Svelte. This is a neat trick - and is possible because we stored the Icon Component directly into the `icon` field in the navigation store (`src/lib/stores/navigation.ts`).
+- We directly use the `dashboardPage.icon` as a component in Svelte. This is a neat trick - and is possible because we stored the Icon Component directly into the `icon` field in the navigation constants (`src/lib/constants/navigation.ts`).
 
 ### A custom Card component
 
@@ -1064,14 +1068,12 @@ Key points to note here:
 
 Now, let's use this `Card` component on our home page (at `/`) to replace our demo counter button and display a welcome message instead.
 
-We'll create a new store `src/lib/stores/projectInfo.ts` to hold the name of the game we are building the web portal for (we'll call it `DemoBots`), so we can later re-use it in other pages or components.
+We'll create a new file `src/lib/constants/strings.ts` to hold the name of the game we are building the web portal for (we'll call it `DemoBots`), so we can later re-use it in other pages or components.
 
 ```typescript
-// /src/lib/stores/projectInfo.ts
+// /src/lib/constants/projectInfo.ts
 
-import { readable, type Readable } from 'svelte/store';
-
-export const gameName: Readable<string> = readable('DemoBots');
+export const GAME_NAME = 'DemoBots';
 ```
 
 We also add an image to the `static` folder at the root of our project named `header.jpg` that we can use as a header image for our card.
@@ -1082,7 +1084,7 @@ Then, we alter the `+page.svelte` file to use our new `Card` component and displ
 <!-- /src/routes/+page.svelte -->
 
 <script lang="ts">
-	import { gameName } from '$lib/stores/projectInfo';
+	import { GAME_NAME } from '$lib/constants/strings';
 	import Card from '$lib/ui/views/Card.svelte';
 </script>
 
@@ -1098,7 +1100,7 @@ Then, we alter the `+page.svelte` file to use our new `Card` component and displ
 				<h3 class="h3">Welcome!</h3>
 			</div>
 			<p class="opacity-60">
-				This website functions as a web portal to a database for the game '{$gameName}'.
+				This website functions as a web portal to a database for the game '{GAME_NAME}'.
 			</p>
 		{/snippet}
 	</Card>
