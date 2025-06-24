@@ -4,7 +4,7 @@
 	import { Modal } from '@skeletonlabs/skeleton-svelte';
 	import { ArrowLeft, DatabaseZap, Menu } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
-	import { pages } from '$lib/stores/navigation';
+	import { PAGES } from '$lib/constants/navigation';
 	import ThemeSwitch from '$lib/ui/control/ThemeSwitch.svelte';
 
 	let drawerState = $state(false);
@@ -45,7 +45,7 @@
 				</header>
 				<hr class="hr my-2" />
 				<article class="flex flex-col">
-					{#each $pages as page, index (page.name)}
+					{#each PAGES as page, index (page.name)}
 						<button
 							class="btn hover:preset-tonal h5 justify-start"
 							onclick={() => onNavItemClick(page.url)}
@@ -54,7 +54,7 @@
 								{page.name}
 							</h5>
 						</button>
-						{#if index < $pages.length - 1}{/if}
+						{#if index < PAGES.length - 1}{/if}
 					{/each}
 				</article>
 			{/snippet}
@@ -75,7 +75,7 @@
 			>
 		</button>
 		<span class="hidden md:flex md:justify-center">
-			{#each $pages as page (page.name)}
+			{#each PAGES as page (page.name)}
 				<button class="btn hover:preset-tonal h5 justify-start" onclick={() => goto(page.url)}>
 					<h5 class="h5">
 						{page.name}

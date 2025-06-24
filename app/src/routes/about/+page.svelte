@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Card from '$lib/ui/views/Card.svelte';
-	import { gameName, adminEmail } from '$lib/stores/projectInfo';
+	import { GAME_NAME, ADMIN_EMAIL } from '$lib/constants/strings';
 </script>
 
 <div class="flex h-full items-center justify-center p-4">
@@ -10,7 +10,7 @@
 		{/snippet}
 		{#snippet article()}
 			<p>
-				This website functions as a web portal to a database for the game '{$gameName}'.
+				This website functions as a web portal to a database for the game '{GAME_NAME}'.
 			</p>
 			<p>
 				To gain access to the database, please log in using your GitHub account. Note that your
@@ -18,12 +18,14 @@
 				website.
 			</p>
 			<p>
-				You can contact the administrator via email at {$adminEmail}.
+				You can contact the administrator via email at {ADMIN_EMAIL}.
 			</p>
 
 			<p>
-				Once logged in, you can view the <a href="/dashboard" class="text-primary-500">dashboard</a
-				>, which provides an overview of the database. There, you can also view data about specific
+				Once logged in, you can view the <a href="/dashboard" class="text-primary-500"
+					>dashboard</a
+				>, which provides an overview of the database. There, you can also view data about
+				specific
 				<a href="/dashboard/user" class="text-primary-500">users</a>
 				or <a href="/dashboard/session" class="text-primary-500">sessions</a>.
 			</p>

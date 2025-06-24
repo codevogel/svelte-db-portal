@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { themes } from '$lib/stores/theme';
+	import { THEMES } from '$lib/constants/themes';
 	import { Popover, Switch } from '@skeletonlabs/skeleton-svelte';
 	import { X, Palette } from 'lucide-svelte';
 	import { onMount } from 'svelte';
@@ -69,7 +69,7 @@
 					<!-- The value of the select is bound to selectedTheme -->
 					<select class="select" bind:value={selectedTheme} onchange={handleThemeSelect}>
 						<!-- Loop through the themes store to create an option for each theme -->
-						{#each $themes as theme (theme.value)}
+						{#each THEMES as theme (theme.value)}
 							<option value={theme.value}>{theme.label}</option>
 						{/each}
 					</select>

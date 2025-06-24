@@ -3,7 +3,7 @@
 <script lang="ts">
 	import { Navigation } from '@skeletonlabs/skeleton-svelte';
 	import { page } from '$app/state';
-	import { dashboardPages } from '$lib/stores/navigation';
+	import { DASHBOARD_PAGES } from '$lib/constants/navigation';
 
 	let value = $state('overview');
 
@@ -18,7 +18,7 @@
 	<aside class="hidden lg:sticky lg:block">
 		<Navigation.Rail {value} onValueChange={(newValue) => (value = newValue)}>
 			{#snippet tiles()}
-				{#each $dashboardPages as dashboardPage (dashboardPage.name)}
+				{#each DASHBOARD_PAGES as dashboardPage (dashboardPage.name)}
 					<Navigation.Tile
 						href={dashboardPage.url}
 						label={dashboardPage.name}
@@ -38,7 +38,7 @@
 	<!-- This is the bar for smaller screens -->
 	<aside class="block lg:hidden">
 		<Navigation.Bar classes="max-h-24" {value} onValueChange={(newValue) => (value = newValue)}>
-			{#each $dashboardPages as dashboardPage (dashboardPage.name)}
+			{#each DASHBOARD_PAGES as dashboardPage (dashboardPage.name)}
 				<Navigation.Tile
 					href={dashboardPage.url}
 					label={dashboardPage.name}

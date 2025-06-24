@@ -1,7 +1,7 @@
 <!-- /src/routes/+page.svelte -->
 
 <script lang="ts">
-	import { gameName } from '$lib/stores/projectInfo';
+	import { GAME_NAME } from '$lib/constants/strings';
 	import Card from '$lib/ui/views/Card.svelte';
 </script>
 
@@ -17,7 +17,7 @@
 				<h3 class="h3">Welcome!</h3>
 			</div>
 			<p class="opacity-60">
-				This website functions as a web portal to a database for the game '{$gameName}'.
+				This website functions as a web portal to a database for the game '{GAME_NAME}'.
 			</p>
 		{/snippet}
 	</Card>
