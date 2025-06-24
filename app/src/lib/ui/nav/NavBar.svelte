@@ -6,8 +6,12 @@
 	import { goto } from '$app/navigation';
 	import { PAGES } from '$lib/constants/navigation';
 	import ThemeSwitch from '$lib/ui/control/ThemeSwitch.svelte';
+	import LogInButton from '$lib/ui/control/LogInButton.svelte';
+	import LogOutButton from '$lib/ui/control/LogOutButton.svelte';
 
 	let drawerState = $state(false);
+
+	let { loggedIn }: { loggedIn: boolean } = $props();
 
 	function drawerClose() {
 		drawerState = false;
@@ -84,7 +88,12 @@
 			{/each}
 		</span>
 	</div>
-	<div class="col-span-1 flex items-center justify-end">
+	<div class="col-span-1 flex items-center md:gap-x-6">
+		{#if loggedIn}
+			<LogOutButton />
+		{:else}
+			<LogInButton />
+		{/if}
 		<ThemeSwitch />
 	</div>
 </div>

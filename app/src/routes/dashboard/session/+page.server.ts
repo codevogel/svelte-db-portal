@@ -2,8 +2,16 @@
 
 import type { PageServerLoad } from './$types';
 import { SessionDAO, type SessionWithUser } from '$lib/server/dao/SessionDAO';
+import { error } from '@sveltejs/kit';
+import { NOT_LOGGED_IN_ERROR } from '$lib/constants/strings';
 
-export const load: PageServerLoad = async ({ url }) => {
+export const load: PageServerLoad = async ({ url, locals }) => {
+	const session = await locals.auth();
+
+	if (!session?.user) {
+		return error(401, NOT_LOGGED_IN_ERROR);
+	}
+
 	let sessions: SessionWithUser[] = [];
 
 	// Either query by username or by id

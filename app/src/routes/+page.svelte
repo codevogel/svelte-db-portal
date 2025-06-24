@@ -2,7 +2,11 @@
 
 <script lang="ts">
 	import { GAME_NAME } from '$lib/constants/strings';
+	import LogInButton from '$lib/ui/control/LogInButton.svelte';
 	import Card from '$lib/ui/views/Card.svelte';
+
+	let { data } = $props();
+	const loggedIn = $derived(data.loggedIn);
 </script>
 
 <div
@@ -19,6 +23,10 @@
 			<p class="opacity-60">
 				This website functions as a web portal to a database for the game '{GAME_NAME}'.
 			</p>
+			{#if !loggedIn}
+				<p>Please log in to access the database.</p>
+				<LogInButton primary={true} />
+			{/if}
 		{/snippet}
 	</Card>
 </div>

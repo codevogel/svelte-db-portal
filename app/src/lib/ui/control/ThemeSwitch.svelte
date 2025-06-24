@@ -1,3 +1,5 @@
+<!-- /src/lib/ui/control/ThemeSwitch.svelte -->
+
 <script lang="ts">
 	import { THEMES } from '$lib/constants/themes';
 	import { Popover, Switch } from '@skeletonlabs/skeleton-svelte';
@@ -55,7 +57,12 @@
 	arrow
 	arrowBackground="!bg-surface-200 dark:!bg-surface-800"
 >
-	{#snippet trigger()}<Palette />{/snippet}
+	{#snippet trigger()}
+		<span class="flex gap-x-1">
+			<span class="hidden text-sm lg:block">Theme</span>
+			<Palette />
+		</span>
+	{/snippet}
 	{#snippet content()}
 		<header class="flex justify-between">
 			<p class="text-xl font-bold">Choose Theme</p>
