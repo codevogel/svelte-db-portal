@@ -97,6 +97,8 @@ Another solid (although technically rule-breaking) option is to run a graphical 
 
 In this section, we will set up git on our machine, setup a repoistory on GitHub, and authenticate out device to GitHub using SSH. This will allow us to clone and push code to our GitHub repositories.
 
+> ℹ️ If you already installed and set up Git on your Windows machine, you should still set it up in WSL! 
+
 ### Install Git
 
 Git comes pre-installed on most Linux distributions, but let's make sure you have it installed. Open your terminal and run the following command:

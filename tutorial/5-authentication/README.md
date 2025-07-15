@@ -16,10 +16,10 @@ By the end of this chapter, you will be able to:
 - Be able to whitelist users to access the application
 
 ### Prerequisites
-
+- Basic understanding of Svelte and SvelteKit
+- A GitHub account for setting up an OAuth application
 
 ### Learning resources
-
 
 ## Auth.js
 
@@ -618,3 +618,16 @@ We already added the `loggedIn` prop to our `+layout.server.ts` file, so we can 
 
 The button should show up when not logged in:
 ![login-from-home.png](/tutorial/5-authentication/img/login-from-home.png)
+
+## Wrapping up
+
+Congratulations! You have successfully implemented a basic authentication system using GitHub OAuth and Auth.js in your SvelteKit application. You can now restrict access to your application to only whitelisted users, and provide a seamless login and logout experience. 
+
+You have learned:
+- Understand the basics of authentication and authorization
+- How to implement a simple authentication system using GitHub OAuth
+- How to create a login page in Svelte
+- How to restrict access to certain routes based on authentication status in SvelteKit
+- How to whitelist users to access the application
+
+This concludes the course on building a web application with SvelteKit. We hope you enjoyed it and learned a lot about SvelteKit, Svelte, and building web applications in general.

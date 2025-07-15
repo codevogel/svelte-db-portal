@@ -208,8 +208,10 @@ We will be met with a message showing the SQL statement that was generated to ad
 > ⚠️ If you push to a database that already has tables, Drizzle will attempt to *alter* the existing tables to match the schema defined in your code. This can however cause some issues with data loss. For simplicity during this course, just *drop* all the tables in your dummy database before pushing the schema, so that Drizzle can create the tables from scratch, and then seed the database (see next section) to repopulate the tables with data. 
 
 Let's go over to [`http://localhost/phpmyadmin/`](http://localhost/phpmyadmin/), open up the `db-demobots` database, and then click on the `user` table to see the structure of the table we just created:
-#### Pulling a schema
+
 ![created-user-table.png](/tutorial/3-drizzle/img/created-user-table.png)
+
+#### Pulling a schema
 
 Looks good! We'll create some more interesting tables that share relations later, but for now, let's try and do the reverse: let's pull a schema from an existing database instead.
 
