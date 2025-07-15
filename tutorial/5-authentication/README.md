@@ -220,7 +220,7 @@ For now, we'll just add it to a new page at `/src/routes/login/+page.svelte`. Do
 You can try to sign in to your application now, by navigating to [`http://localhost:5173/login`](http://localhost:5173/login) in your browser.
 This should redirect you to GitHub, where you are asked to sign in and/or authorize our OAuth application, and then redirect you back to our web app. This stores your session in a cookie, which is then used to authenticate you in subsequent requests.
 
-![[github-oauth.png]]
+![github-oauth.png](/tutorial/5-authentication/img/github-oauth.png)
 
 Of course, this doesn't do much on it's own just yet, as we haven't really implemented any logic to check if the user is allowed to access our application.
 So, let's do that next.
@@ -361,7 +361,7 @@ Now, we just need to create the `/auth/not-whitelisted` page that users will be 
 
 If you sign out and remove your GitHub user ID from the `ALLOWED_GITHUB_IDS` list in your `.env` file, you should now be redirected to this page when trying to sign in:
 
-![[auth-error.png]]
+![auth-error.png](/tutorial/5-authentication/img/auth-error.png)
 
 Awesome, we now have control over who can access our application: We can sign in as a user, and sign out again, and we can restrict access to only those users that are whitelisted in our `.env` file.
 
@@ -556,8 +556,8 @@ Just to stay consistent with these new buttons, we will also update the `ThemeSw
 
 Now, you should see the Log In button in the NavBar when you are not logged in, and the Log Out button when you are logged in. Clicking the Log In button will redirect you to the GitHub OAuth flow, and clicking the Log Out button will log you out and redirect you to the home page.
 
-![[navbar-buttons-small.png]]
-![[navbar-buttons-large.png]]
+![navbar-buttons-small.png](/tutorial/5-authentication/img/navbar-buttons-small.png)
+![navbar-buttons-large.png](/tutorial/5-authentication/img/navbar-buttons-large.png)
 
 We can now remove the `/login` and `/logout` routes/pages, as we no longer need them (keep the `auth/sign-in` and `auth/sign-out` routes!). The Log In and Log Out buttons in the NavBar will handle the sign in and sign out actions for us.
 
@@ -582,7 +582,7 @@ Let's update our `Error.svelte` component to show a Log In button when the user 
 </div>
 ```
 
-![[login-from-error.png]]
+![login-from-error.png](/tutorial/5-authentication/img/login-from-error.png)
 
 #### Showing a Log In button on the home page when not logged in
 
@@ -617,4 +617,4 @@ We already added the `loggedIn` prop to our `+layout.server.ts` file, so we can 
 ```
 
 The button should show up when not logged in:
-![[login-from-home.png]]
+![login-from-home.png](/tutorial/5-authentication/img/login-from-home.png)

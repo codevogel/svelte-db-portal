@@ -311,7 +311,7 @@ You'll be prompted with a few options.
 
 Your log should look something like this:
 
-![[npx-sv-log.png]]
+![npx-sv-log.png](/tutorial/0-setup/img/npx-sv-log.png)
 
 Verify that everything was installed correctly by running the Svelte development server: 
 

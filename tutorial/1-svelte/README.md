@@ -117,7 +117,7 @@ It's understandable if you don't understand everything in the interactive tutori
 
 The project structure of a Svelte application is described in the [SvelteKit documentation](https://svelte.dev/docs/kit/project-structure) quite well, but let's take a look at the structure of our generated Svelte application (using the `sv` CLI) to understand how it works and what files are important for us to know about.
 
-![[tree.png]]
+![tree.png](/tutorial/1-svelte/img/tree.png)
 
 Let's break down the relevant parts of this structure for now:
 - `src/`: This is the main source directory for your Svelte application. All your Svelte components, routes, and styles will be placed here.
@@ -157,7 +157,7 @@ If you haven't done so already, run `npm run dev` in the terminal to start the d
 
 With the development server running, open your browser and navigate to [`http://localhost:5173/`](http://localhost:5173/) as prompted. You should see the content of the `+page.svelte` file rendered in the browser:
 
-![[standard-page.png]]
+![standard-page.png](/tutorial/1-svelte/img/standard-page.png)
 
 Let's edit this file to include our own welcome message.
 
@@ -171,7 +171,7 @@ Let's edit this file to include our own welcome message.
 
 And see it update as soon as we save, without having to reload the browser.
 
-![[custom-welcome.png]]
+![custom-welcome.png](/tutorial/1-svelte/img/custom-welcome.png)
 
 Now, we *could* add some styling with the `style` tag and some CSS, and see that update as well:
 
@@ -189,7 +189,7 @@ Now, we *could* add some styling with the `style` tag and some CSS, and see that
 </style>
 ```
 
-![[styled-welcome.png]]
+![styled-welcome.png](/tutorial/1-svelte/img/styled-welcome.png)
 
 But since we've installed [Tailwind CSS](), we won't be using those. Instead we'll be using Tailwind's class-based styling instead:
 
@@ -220,7 +220,7 @@ Just to get a feel of how Svelte works, let's add a little button and some text 
 </div>
 ```
 
-![[button-welcome.png]]
+![button-welcome.png](/tutorial/1-svelte/img/button-welcome.png)
 
 This obviously doesn't do much yet, but let's add that functionality. For this, we need to understand two of the runes that Svelte provides: [`$state`](https://svelte.dev/docs/svelte/$state) and [`$derived`](https://svelte.dev/docs/svelte/$derived) (click on the links to see the official documentation).
 
@@ -261,7 +261,7 @@ This obviously doesn't do much yet, but let's add that functionality. For this, 
 
 Let's see it in action:
 
-![[reactive-button.gif]]
+![reactive-button.gif](/tutorial/1-svelte/img/reactive-button.gif)
 
 Cool! It's a simple example, but gives a good idea of how Svelte's reactivity works.
 Now let's see some of SvelteKit's routing features in action.
@@ -287,7 +287,7 @@ Now, let's add some content to it:
 
 If we then navigate to [`http://localhost:5173/about`](http://localhost:5173/about) in our browser, we should see the content of the `about` page:
 
-![[about-us.png]]
+![about-us.png](/tutorial/1-svelte/img/about-us.png)
 
 So what if we wanted to add some sub-pages to, like a dashboard page at `/dashboard`, a dashboard sub-page user at `/dashboard/user` and another dashboard sub-page sessions at `/dashboard/session`?
 Well, we would just create the `src/routes/dashboard` directory as we did above, add subdirectories inside the `dashboard` directory, and add `+page.svelte` files inside those directories as well:
@@ -368,7 +368,7 @@ For example, let's add a simple navigation bar to our layout.
 
 We should see the navigation links appear on any page, before the content:
 
-![[simple-nav.gif]]
+![simple-nav.gif](/tutorial/1-svelte/img/simple-nav.gif)
 
 Okay, cool! But we have yet to consolidate our dashboard paages to share a common layout. Let's see how we can do that now.
 
@@ -407,7 +407,7 @@ We can now alter the contents of the `src/routes/dashboard/+page.svelte` file to
 
 Now we can see that the dashboard pages share a common layout:
 
-![[shared-layout.gif]]
+![shared-layout.gif](/tutorial/1-svelte/img/shared-layout.gif)
 
 Cool! 
 However, we now have some duplicate markup for our navigation in both our `src/routes/+layout.svelte` file as well as our `src/routes/dashboard/+layout.svelte` file that doesn't really *directly relate* to defining a layout. Besides, the urls are hardcoded. We can do much better. Applying the [Single Reponsibility Principle](https://en.wikipedia.org/wiki/Single-responsibility_principle), we should extract this navigation logic into a separate component, and then use that component in our layout.
@@ -533,7 +533,7 @@ Now we can import and use this `PageInfo` interface in our `NavBar.svelte` compo
 
 It may look like we haven't changed much, but we have now added type safety to our `pages` array, which will help us catch errors early should we try to add a property with an incompatible type, or forget to add a required property:
 
-![[type-error.png]]
+![type-error.png](/tutorial/1-svelte/img/type-error.png)
 
 Awesome! This will definitely help us catch errors later as we increase the complexity of our application.
 

@@ -108,7 +108,7 @@ Let's quickly add some code to display this data from `myData`:
 
 Et voilà! When we visit the page, we should now see that static data displayed on the page:
 
-![[display-static-data.png]]
+![display-static-data.png](/tutorial/4-load-and-display-data/img/display-static-data.png)
 
 Let's remove the code we just added in the `+page.svelte` file, and replace the `load` function in the `+page.server.ts` file with some code that queries our database for a list of users.
 
@@ -187,7 +187,7 @@ We'll make use of the `$derived` rune to ensure that the list of users is reacti
 
 Let's take a look at the `/` route now, and confirm that we are displaying the data from the users in our database:
 
-![[show-users.png]]
+![show-users.png](/tutorial/4-load-and-display-data/img/show-users.png)
 
 Awesome! We now know how to load data from the database and display it in our SvelteKit application.
 
@@ -490,9 +490,9 @@ Key points to note here are:
 	  - A query only returns one value per row per column. 
 	  - In the subquery, we have multiple scores per session
 	  - When we inner join the scores on the sessions table, and then group by userId, we get only one score value per row, arbitrarely chosen by position in the database.
-	  ![[query-explanation-1.png]]
+	  ![query-explanation-1.png](/tutorial/4-load-and-display-data/img/query-explanation-1.png)
 	  - But the `MAX` function ensures the value is the Maximum of all possible values that could fit that row:
-	  ![[query-explanation-2.png]]
+	  ![query-explanation-2.png](/tutorial/4-load-and-display-data/img/query-explanation-2.png)
 	- We can see that the other columns (e.g. session id) don't change, but that's okay, because we're only after the user id and the MAX score in this subquery.
 	- We will find the corresponding score, user, and session in the next query. 
 - We use the `as` method to alias the maximum score column, so we can reference it later in the query.
@@ -549,7 +549,7 @@ Finally, let's create a rudimentary UI to display the top scorers in the `/route
 {/each}
 ```
 
-![[top-scorers.png]]
+![top-scorers.png](/tutorial/4-load-and-display-data/img/top-scorers.png)
 
 Awesome! That was a pretty advanced query, but we can see that Drizzle makes it quite easy to work on complex queries like this.
 
@@ -669,7 +669,7 @@ Key points to note here:
 
 Now we should see the relevant users appear as we type:
 
-![[responsive-user-search.gif]]
+![responsive-user-search.gif](/tutorial/4-load-and-display-data/img/responsive-user-search.gif)
 
 
 Let's do the same for the sessions, so we can search for sessions by the session ID or the username of the user who created the session.
@@ -827,7 +827,7 @@ export const load: PageServerLoad = async ({ url }) => {
 
 Now we can search for sessions by either ID or username, and the results will be displayed in a list of clickable links that lead to the session detail page:
 
-![[responsive-session-search.gif]]
+![responsive-session-search.gif](/tutorial/4-load-and-display-data/img/responsive-session-search.gif)
 
 ## Error handling
 
@@ -933,15 +933,15 @@ Okay, we're all set up to handle errors now. Let's look at how we're doing so fa
 
 Querying an existing user shows their username:
 
-![[showing-user.png]]
+![showing-user.png](/tutorial/4-load-and-display-data/img/showing-user.png)
 
 And querying a non-existing user will lead us to an error page:
 
-![[error-dashboard.png]]
+![error-dashboard.png](/tutorial/4-load-and-display-data/img/error-dashboard.png)
 
 And - though perhaps a little less relevant for what we're doing - visiting any other non-existing route will also lead us to an error page, but this time not sharing the layout of the dashboard:
 
-![[error-root.png]]
+![error-root.png](/tutorial/4-load-and-display-data/img/error-root.png)
 
 
 ## Visualizing Data
@@ -1119,7 +1119,7 @@ Key points to note here:
 
 This will display the found users in a much more presentable way:
 
-![[found-users-table.gif]]
+![found-users-table.gif](/tutorial/4-load-and-display-data/img/found-users-table.gif)
 
 Similarly, we can implement the Table into our `/dashboard/session/+page.svelte` file to display the found sessions:
 (We're not showing the full page code here, as you should be able to implement this yourself by now - the code is very similar to the user page.)
@@ -1345,7 +1345,7 @@ Key points to note here:
 
 We should now see a neat User Profile section and a table providing an overview of their sessions, along with the average score per session:
 
-![[user-details.png]]
+![user-details.png](/tutorial/4-load-and-display-data/img/user-details.png)
 
 #### Displaying scores per session in a table
 
@@ -1702,7 +1702,7 @@ For example, to set our Session table in `/src/routes/dashboard/user/[id]/+page.
 </script>
 ```
 
-![[pagination.gif]]
+![pagination.gif](/tutorial/4-load-and-display-data/img/pagination.gif)
 
 We can also choose to disable the feature we just added for specific tables by setting the `enabled` property to `false` in the `paginationOptions`.
 For example, to disable pagination on the user and session search results:
@@ -1906,7 +1906,7 @@ Next, we can use this `ScoreOverTimeInSessionChart` component in `/src/routes/da
 
 And just like that, we have a neat chart mapping the score over time in a session!
 
-![[charthover.gif]]
+![charthover.gif](/tutorial/4-load-and-display-data/img/charthover.gif)
 
 To ensure this wasn't a fluke, let's also implement a chart for the user detail page, showing the average score per session over time.
 
@@ -2099,7 +2099,7 @@ Key points to note here:
 
 Cool. We now have a nice overview page that takes us to the user detail page when clicking on a user, and to the session detail page when clicking on a top scorer.
 
-![[dashboard-overview.gif]]
+![dashboard-overview.gif](/tutorial/4-load-and-display-data/img/dashboard-overview.gif)
 
 ### Retouching the About Us section
 
@@ -2156,7 +2156,7 @@ export const ADMIN_EMAIL = 'demo@admin.com';
 
 And now we have this nice card on our About page:
 
-![[about.png]]
+![about.png](/tutorial/4-load-and-display-data/img/about.png)
 
 ## Wrapping up
 

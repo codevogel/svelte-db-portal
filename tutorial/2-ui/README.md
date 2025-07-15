@@ -104,7 +104,7 @@ To get started with Skeleton, we first need to install it in our Svelte project.
     ```
 
 4. (Re)run the development server and see that our [theming](https://www.skeleton.dev/docs/design/themes) has now changed:
-   ![[install-theme.png]]
+   ![install-theme.png](/tutorial/2-ui/img/install-theme.png)
 
 ### Basic Skeleton components
 
@@ -123,7 +123,7 @@ After a quick look at the [Skeleton documentation](https://www.skeleton.dev/docs
 
 And we'll see that our button has now changed to a themed button with a color according to the Skeleton [Color System](https://www.skeleton.dev/docs/design/colors) : 
 
-![[themed-button.png]]
+![themed-button.png](/tutorial/2-ui/img/themed-button.png)
 
 Now, this is a nice looking button, but Skeleton can do more than just buttons. First though, let's take a look at how we can change the theme of our website, and then we'll explore some more advanced Skeleton components to switch between those themes.
 
@@ -546,7 +546,7 @@ Awesome. Now our `ThemeSwitch` component is fully functional. If you got lost al
 
 Let's try it out (Note that the drop down is not rendered inside the screen recording software used for the .gif below, but it should appear on your screen!):
 
-![[theme-switcher.gif]]
+![theme-switcher.gif](/tutorial/2-ui/img/theme-switcher.gif)
 
 ### A better layout
 
@@ -600,11 +600,11 @@ We had a simple `NavBar` component before, but let's expand it with a logo and o
 
 Let's look at an example of the `NavBar` we'll be creating.
 
-![[navbar.png]]
+![navbar.png](/tutorial/2-ui/img/navbar.png)
 
 That looks pretty, but on smaller screens, these buttons might get a little too cramped. we will responsively switch over to side-bar navigation instead:
 
-![[modal-navbar.gif]]
+![modal-navbar.gif](/tutorial/2-ui/img/modal-navbar.gif)
 
 Okay, so how do we create this?
 
@@ -770,7 +770,7 @@ Now, let's add some screen size prefixes to the `NavBar` to make it responsive a
 
 Let's take a look at the complete `NavBar` component with responsive design:
 
-![[responsive-navbar.gif]]
+![responsive-navbar.gif](/tutorial/2-ui/img/responsive-navbar.gif)
 
 Again, here's the full code if you got a little lost along the way:
 
@@ -873,13 +873,13 @@ Now that we have a nice looking NavBar, let's improve the layout for our dashboa
 
 Here's an example of what we want to achieve for smaller screens:
 
-![[bar-nav.png]]
+![bar-nav.png](/tutorial/2-ui/img/bar-nav.png)
 
 Shown above is a content section that takes up most of the screen, with [`Bar` navigation](https://www.skeleton.dev/docs/components/navigation/svelte/#bar) that shows navigation to the three sub-pages (we count the `/dashboard` page as the 'overview' page) at the bottom of the screen.
 
 For larger screens, we want to switch to [`Rail` navigation](https://www.skeleton.dev/docs/components/navigation/svelte/#rail), which puts the navigation element on the left-hand side of the screen:
 
-![[rail-nav.png]]
+![rail-nav.png](/tutorial/2-ui/img/rail-nav.png)
 
 First, let's expand the `navigation.ts` file (and `PageInfo` interface) to include Lucide icons we can display for each page:
 
@@ -1109,7 +1109,7 @@ Then, we alter the `+page.svelte` file to use our new `Card` component and displ
 
 That looks much better!
 
-![[welcome-card.png]]
+![welcome-card.png](/tutorial/2-ui/img/welcome-card.png)
 
 We now have all major UI components in place to build out the rest of our application.
 
