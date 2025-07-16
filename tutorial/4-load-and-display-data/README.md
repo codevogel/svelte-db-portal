@@ -19,11 +19,16 @@ By the end of this chapter, you will be able to:
     - Dynamic charts using Chart.js for visual insights.
 - Extract utility functions to promote reuse and clarity in your codebase.
 
-### Prerequisites
-
-
 ### Learning resources
+- [SvelteKit Documentation](https://kit.svelte.dev/docs/load)
 
+- [Drizzle ORM Documentation](https://orm.drizzle.team/docs/overview)
+
+- [Chart.js Documentation](https://www.chartjs.org/docs/latest/)
+
+- [Skeleton.dev UI Components](https://www.skeleton.dev/docs/components)
+
+- [Understanding DAOs (Data Access Objects)](https://en.wikipedia.org/wiki/Data_access_object)
 
 ## Data loading with SvelteKit
 ### Loading page data
