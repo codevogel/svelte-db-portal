@@ -1,6 +1,10 @@
 # Svelte DB Portal
 
-> A beginner-friendly guide to building a full-stack web portal using SvelteKit, MySQL*, Drizzle ORM, Auth.js, Skeleton UI, and Chart.js.
+**A beginner-friendly guide to building a full-stack web portal using SvelteKit, MySQL\*, Drizzle ORM, Auth.js, Skeleton UI, and Chart.js.**
+
+Click the image below to get started with the tutorial:
+
+[<img width="350px" height="auto" src="https://raw.githubusercontent.com/codevogel/svelte-db-portal/refs/heads/main/assets/img/get_started.png">](https://github.com/codevogel/svelte-db-portal/blob/main/tutorial/0-setup/README.md)
 
 ---
 
