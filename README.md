@@ -1,6 +1,6 @@
 # Svelte DB Portal
 
-> A beginner-friendly guide to building a full-stack web portal using SvelteKit, MySQL, Drizzle ORM, Lucia authentication, Skeleton UI, and Chart.js.
+> A beginner-friendly guide to building a full-stack web portal using SvelteKit, MySQL*, Drizzle ORM, Auth.js, Skeleton UI, and Chart.js.
 
 ---
 
@@ -26,10 +26,10 @@ This project teaches students and beginner developers how to build a modern, ful
 |-----------------|---------------------------------------------------------------------------------------------|----------------------------------------------|
 | Svelte          | A popular component-based UI framework for building reactive interfaces                      | [svelte.dev](https://svelte.dev/)             |
 | SvelteKit       | A framework for rapidly building robust, performant web applications using Svelte.           | [kit.svelte.dev](https://kit.svelte.dev/)     |
-| MySQL           | An open-source relational database management system (RDBMS) used to store and manage data  | [mysql.com](https://www.mysql.com/)           |
+| MariaDB         | An open-source relational database management system (RDBMS) used to store and manage data  | [mariadb.org](https://mariadb.org/)           |
 | XAMPP           | A local development environment providing Apache, MySQL, PHP, and Perl for easy setup       | [apachefriends.org](https://www.apachefriends.org/index.html) |
 | Drizzle ORM     | A type-safe SQL Object-Relational Mapper (ORM) for building queries and managing migrations | [orm.drizzle.team](https://orm.drizzle.team/) |
-| Lucia           | An authentication guide for managing user authentication and sessions               | [lucia-auth.com](https://lucia-auth.com/)    |
+| Auth.js         | Auth.js is a runtime agnostic library for authentication.                                   | [authjs.dev](https://authjs.dev/)    |
 | Tailwind CSS    | A utility-first CSS framework for styling and customization                                 | [tailwindcss.com](https://tailwindcss.com/)  |
 | Skeleton UI     | A lightweight UI component library built on top of Tailwind CSS                            | [skeleton.dev](https://www.skeleton.dev/)     |
 | Chart.js        | Simple, flexible JavaScript charting library for data visualization                        | [chartjs.org](https://www.chartjs.org/)       |
@@ -56,6 +56,8 @@ This project teaches students and beginner developers how to build a modern, ful
 Detailed step-by-step instructions for setting up the environment, database configuration, migrations, and running the project are provided in the `/tutorial` folder.
 
 Please visit the [tutorial README](/tutorial/README.md) to get started.
+
+(*) MySQL is used as a placeholder for MariaDB, which is (mostly) an open-source drop-in replacement for MySQL.
 
 ## 🤝 Contributing
 
