@@ -1,5 +1,7 @@
 # 0 - Setup
 
+> Note: This course is also available in [PDF](https://github.com/codevogel/svelte-db-portal/blob/main/tutorial/0-setup/0-setup.pdf) and [Dutch](https://github.com/codevogel/svelte-db-portal/blob/main/tutorial/0-setup/README-nl.md)
+
 In this chapter, we will set up the development environment for the project. We'll walk you through the steps to install the necessary tools and libraries, so you can start working on the project in the next chapter [(1 - Svelte)](/tutorial/1-svelte/README.md).
 
 ## Chapter overview 
