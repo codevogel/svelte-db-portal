@@ -17,10 +17,6 @@ Aan het einde van dit hoofdstuk zul je:
   - Gezaaide data verbeteren met Faker.js voor geavanceerdere data generatie scenario's
   - Basisquery's schrijven om data op te halen en te manipuleren met Drizzle ORM
 
-### Vereisten
-
-  - Basisbegrip van SQL en relationele databases.
-
 ### Leermiddelen
 
   - [Drizzle ORM Official Documentation](https://orm.drizzle.team/) - Uitgebreide gids die alle functies behandelt

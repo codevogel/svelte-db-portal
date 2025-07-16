@@ -12,11 +12,6 @@ At the end of this chapter, you will be able to:
 - Setup a local MySQL database using XAMPP (or more specifically, LAMPP)
 - Create a new Svelte project using the CLI.
 
-### Prerequisites
-- A computer with internet access.
-- Basic knowledge of command line interface (CLI) commands. (Learning resources are provided below.)
-- Basic knowledge of Git and GitHub.
-
 ### Learning Resources
 - [Windows Subsystem for Linux (WSL) Installation Guide](https://docs.microsoft.com/en-us/windows/wsl/install)
 - [GitHub SSH Authentication Guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh)

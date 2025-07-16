@@ -16,9 +16,6 @@ At the end of this chapter, you will:
 - Enhance seeded data with Faker.js for more sophisticated data generation scenarios
 - Write basic queries to retrieve and manipulate data using Drizzle ORM 
 
-### Prerequisites
-- Basic understanding of SQL and relational databases.
-
 ### Learning resources
 
 - [Drizzle ORM Official Documentation](https://orm.drizzle.team/) - Comprehensive guide covering all features

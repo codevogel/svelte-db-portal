@@ -15,10 +15,6 @@ By the end of this chapter, you will be able to:
 - Restrict access to certain routes based on authentication status in SvelteKit
 - Be able to whitelist users to access the application
 
-### Prerequisites
-- Basic understanding of Svelte and SvelteKit
-- A GitHub account for setting up an OAuth application
-
 ### Learning resources
 
 ## Auth.js

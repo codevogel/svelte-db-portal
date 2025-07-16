@@ -28,11 +28,6 @@ At the end of this chapter, you will have created:
         - `/dashboard/sessions`: A sessions page with some sample content.
 - A reusable, styled, and modular `NavBar.svelte` component.
 
-### Prerequisites
-
-- Basic understanding of HTML, CSS, and JavaScript/TypeScript.
-- Basic familiarity with web development terminology and concepts.
-
 ### Learning Resources
 
 - [HTML (W3 schools)](https://www.w3schools.com/html/)

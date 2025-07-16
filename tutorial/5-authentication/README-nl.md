@@ -16,11 +16,6 @@ Aan het einde van dit hoofdstuk kun je:
   - Toegang tot bepaalde routes beperken op basis van de authenticatiestatus in SvelteKit.
   - Gebruikers op een witte lijst zetten om toegang te krijgen tot de applicatie.
 
-### Vereisten
-
-  - Basiskennis van Svelte en SvelteKit.
-  - Een GitHub-account voor het opzetten van een OAuth-applicatie.
-
 ### Leermiddelen
 
 ## Auth.js

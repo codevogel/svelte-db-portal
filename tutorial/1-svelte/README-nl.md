@@ -28,11 +28,6 @@ Aan het einde van dit hoofdstuk heb je gemaakt:
         - `/dashboard/sessions`: Een sessiepagina met voorbeeldinhoud.
 - Een herbruikbare, gestylde en modulaire `NavBar.svelte`-component.
 
-### Vereisten
-
-- Basisbegrip van HTML, CSS en JavaScript/TypeScript.
-- Basiskennis van web development-terminologie en -concepten.
-
 ### Leermiddelen
 
 - [HTML (W3 schools)](https://www.w3schools.com/html/)

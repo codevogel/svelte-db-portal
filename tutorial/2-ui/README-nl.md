@@ -20,12 +20,6 @@ Aan het einde van dit hoofdstuk kun je:
   - Skeleton's Navigation.Rail en Navigation.Bar componenten gebruiken voor sectie-gebaseerde navigatie.
   - Een flexibele Card component creëren met behulp van Svelte snippets en Tailwind styling.
 
-### Vereisten
-
-  - Basiskennis van Svelte en SvelteKit (zoals behandeld in de vorige hoofdstukken).
-  - Enige bekendheid met [Tailwind CSS](https://tailwindcss.com/).
-  - Basiskennis van [responsive design principes](https://www.interaction-design.org/literature/article/responsive-design-let-the-device-do-the-work).
-
 ### Leermiddelen
 
   - [Lucide Svelte installation](https://lucide.dev/guide/installation#svelte)
