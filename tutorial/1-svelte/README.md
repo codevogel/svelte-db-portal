@@ -1,4 +1,4 @@
-# Svelte
+# 1 - Svelte
 
 In this chapter, we will set up the skeleton for our Svelte application, creating the basic UI, routing, and page content.
 

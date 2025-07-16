@@ -1,4 +1,4 @@
-# UI
+# 2 - UI
 
 Until now, we have been focusing on the functionality of our application, creating a small website with a couple of pages and an interactive button.
 In this chapter, we will start building out the user interface (UI) for our application.

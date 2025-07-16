@@ -1,4 +1,4 @@
-# Installatie
+# 0 - Installatie
 
 In dit hoofdstuk zullen we de ontwikkelomgeving voor het project opzetten. We leiden je door de stappen om de benodigde tools en bibliotheken te installeren, zodat je in het volgende hoofdstuk [(1 - Svelte)](/tutorial/1-svelte/README.md) met het project kunt beginnen.
 

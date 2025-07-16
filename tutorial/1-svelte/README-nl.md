@@ -1,4 +1,4 @@
-# Svelte
+# 1 - Svelte
 
 In dit hoofdstuk zetten we de basisstructuur op voor onze Svelte-applicatie en maken we de basis-UI, routing en paginacontent.
 

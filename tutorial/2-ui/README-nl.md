@@ -1,4 +1,4 @@
-# UI
+# 2 - UI
 
 Tot nu toe hebben we ons gericht op de functionaliteit van onze applicatie, waarbij we een kleine website hebben gemaakt met een paar pagina's en een interactieve knop.
 In dit hoofdstuk gaan we de gebruikersinterface (UI) voor onze applicatie bouwen.

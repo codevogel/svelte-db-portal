@@ -1,4 +1,4 @@
-# Setup
+# 0 - Setup
 
 In this chapter, we will set up the development environment for the project. We'll walk you through the steps to install the necessary tools and libraries, so you can start working on the project in the next chapter [(1 - Svelte)](/tutorial/1-svelte/README.md).
 
