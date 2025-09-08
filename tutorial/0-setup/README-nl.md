@@ -148,7 +148,7 @@ We kunnen proberen het te klonen naar onze lokale machine door op de groene "Cod
 # Maak een directory genaamd 'work' in onze home directory
 mkdir -p ~/work
 # Ga naar de 'work' directory
-cd work
+cd ~/work
 # Kloon de repository via SSH
 git clone git@github.com:mijngebruikersnaam/mijnreponaam.git
 ```
