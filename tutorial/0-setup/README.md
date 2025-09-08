@@ -151,7 +151,7 @@ We can try cloning it to our local machine by clicking the green "Code" button o
 # Create a directory called 'work' in our home directory
 mkdir -p ~/work    
 # Change to the 'work' directory
-cd work
+cd ~/work
 # Clone the repository using SSH
 git clone git@github.com:myusername/myreponame.git
 ```
