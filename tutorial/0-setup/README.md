@@ -293,7 +293,7 @@ npx sv create app     # 'app' is just the name of our app. Feel free to change i
 
 You'll be prompted with a few options.
 
-- [ ] Choose a template: Select `Skeleton project` for a minimal setup.
+- [ ] Choose a template: Select `SvelteKit Minimal project` for a minimal setup.
 - [ ] Use TypeScript syntax: Choose `Yes`, as we will be using TypeScript in this project.
 - [ ] For plugins, check:
     - [ ] `ESLint`, a linter for JavaScript and TypeScript code.
