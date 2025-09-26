@@ -288,19 +288,19 @@ So what if we wanted to add some sub-pages to, like a dashboard page at `/dashbo
 Well, we would just create the `src/routes/dashboard` directory as we did above, add subdirectories inside the `dashboard` directory, and add `+page.svelte` files inside those directories as well:
 
 ```svelte
-<!-- /src/routes/dashbaord/+page.svelte -->
+<!-- /src/routes/dashboard/+page.svelte -->
 
 <h1 class="text-3xl font-bold">Dashboard.</h1>
 <p>This is where the dashboard will live.</p>
 
 <!-- /src/routes/dashboard/user/+page.svelte -->
 
-<h2 class="text-xl font-bold">User Page</h1>
+<h2 class="text-xl font-bold">User Page</h2>
 <p>This is the user page.</p>
 
 <!-- /src/routes/dashboard/session/+page.svelte -->
 
-<h2 class="text-xl font-bold">Session Page</h1>
+<h2 class="text-xl font-bold">Session Page</h2>
 <p>This is the session page.</p>
 ```
 
