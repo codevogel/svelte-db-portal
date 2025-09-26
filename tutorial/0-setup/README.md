@@ -258,6 +258,8 @@ Verify that the installation was successful by running the following command:
 sudo /opt/lampp/lampp status
 ```
 
+> ⚠️ If you get something along the lines of `netstat` not found, you need to install the [`net-tools`](https://launchpad.net/ubuntu/+source/net-tools) package. You can do so with `sudo apt install net-tools`, or the equivalent command if you use a different package manager than `apt`.
+
 This should return the status of the XAMPP services, such as Apache and MySQL. If everything is running, you should see something like:
 
 ```
@@ -272,6 +274,8 @@ We can attempt to start the services by running:
 ```bash
 sudo /opt/lampp/lampp start
 ```
+
+> ⚠️ If you get something along the lines of `netstat` not found, you need to install the [`net-tools`](https://launchpad.net/ubuntu/+source/net-tools) package. You can do so with `sudo apt install net-tools`, or the equivalent command if you use a different package manager than `apt`.
 
 Awesome - looks like we're almost done with the setup! We just need to create our Svelte project.
 
