@@ -490,7 +490,7 @@ Svelte supports TypeScript out of the box, which allows us to define types for o
 
 For type safety, let's extrapolate the `PageInfo` type into an `interface` in a separate file, so that we can easily reuse it in other components or files, should we need to.
 
-Create a new file at `src/lib/types/page.ts` and define the `PageInfo` interface:
+Create a new file at `src/lib/types/pageInfo.ts` and define the `PageInfo` interface:
 
 ```typescript
 // src/lib/types/pageInfo.ts
