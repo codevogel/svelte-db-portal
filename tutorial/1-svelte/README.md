@@ -611,14 +611,11 @@ Let's fix that using constants.
 
 We have a few immutable values in our application, such as the `pages` array and the `dashboardPages` array. We can store these in a separate file and import them into our components, so that we can re-use them across our application without duplicating the data.
 
-We need to install `lucide-svelte` for some reusable icons, so go ahead and run `npm install lucide-svelte` before proceeding. In the next chapter (2-ui), we'll go into more detail on what Lucide will do for us.
-
 Let's create a new file at `src/lib/constants/navigation.ts` and define our `PAGES` and `DASHBOARD_PAGES` constants there: 
 
 ```typescript
 // /src/lib/constants/navigation.ts
 
-import { PanelsTopLeft, User, Dumbbell } from 'lucide-svelte';
 import type { PageInfo } from '$lib/types/pageInfo';
 
 export const PAGES: PageInfo[] = [
@@ -631,20 +628,17 @@ export const DASHBOARD_PAGES: PageInfo[] = [
 	{
 		name: 'Overview',
 		url: '/dashboard/',
-		description: 'Dashboard overview.',
-		icon: PanelsTopLeft
+		description: 'Dashboard overview.'
 	},
 	{
 		name: 'User',
 		url: '/dashboard/user',
-		description: 'Query user information',
-		icon: User
+		description: 'Query user information'
 	},
 	{
 		name: 'Session',
 		url: '/dashboard/session',
-		description: 'View session details.',
-		icon: Dumbbell
+		description: 'View session details.'
 	}
 ];
 
