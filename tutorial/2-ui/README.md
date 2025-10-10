@@ -1066,7 +1066,7 @@ Now, let's use this `Card` component on our home page (at `/`) to replace our de
 We'll create a new file `src/lib/constants/strings.ts` to hold the name of the game we are building the web portal for (we'll call it `DemoBots`), so we can later re-use it in other pages or components.
 
 ```typescript
-// /src/lib/constants/projectInfo.ts
+// /src/lib/constants/strings.ts
 
 export const GAME_NAME = 'DemoBots';
 ```
