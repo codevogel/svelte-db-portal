@@ -31,7 +31,7 @@ At the end of this chapter, you will:
 ## Introduction to ORMs
 
 An ORM (Object Relational Mapper) is a programming technique that allows us to interact with a database using an object-oriented approach. Instead of writing raw SQL queries, we can use an ORM to define our database tables and relationships as classes and objects in our code. This allows us to work with our data in a more intuitive way, and can help us avoid some of the common pitfalls of raw SQL queries, such as SQL injection attacks.
-i
+
 [Drizzle](https://orm.drizzle.team/) is a TypeScript ORM that is designed to be simple and easy to use. It allows us to define our database tables and relationships using TypeScript classes, and provides a simple API for querying and manipulating our data. Drizzle also provides drizzle-seed, a tool for seeding our database with initial data. This can be useful for testing and development purposes, as it allows us to quickly populate our database with some sample data without having to write a bunch of SQL queries by hand.
 
 It is a code-first ORM, meaning that we define our database schema in code, and then use the Drizzle CLI to push that schema to our database.
