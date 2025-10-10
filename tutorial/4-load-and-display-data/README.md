@@ -812,10 +812,10 @@ export const load: PageServerLoad = async ({ url }) => {
 			{/snippet}
 			{#snippet article()}
 				<div class="max-h-64 overflow-y-scroll">
-					{#each sessionResults as result (result.session.id)}
+					{#each sessionResults as result (result.id)}
 						<div class="flex flex-col gap-2">
-							<a href='/dashboard/session/{result.session.id}'>
-								<span>Session {result.session.id} by {result.user.username}</span>
+							<a href='/dashboard/session/{result.id}'>
+								<span>Session {result.id} by {result.user.username}</span>
 							</a>	
 						</div>
 					{/each}
