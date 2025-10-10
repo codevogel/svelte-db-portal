@@ -185,10 +185,10 @@ export const { handle, signIn } = ...
 })
 ```
 
-Then we will create the `+server.ts` file in the `src/routes/auth/sign-in` directory, which will handle the sign-in requests. This file will export an `actions` object with a `default` action that calls the `signIn` function we just exported.
+Then we will create the `+page.server.ts` file in the `src/routes/auth/sign-in` directory, which will handle the sign-in requests. This file will export an `actions` object with a `default` action that calls the `signIn` function we just exported.
 
 ```typescript
-// /src/routes/auth/sign-in/+server.ts
+// /src/routes/auth/sign-in/+page.server.ts
 
 import { signIn } from "$lib/server/auth/auth"
 import type { Actions } from "./$types"
@@ -265,10 +265,10 @@ First, expand the `src/lib/server/auth/auth.ts` file to export the `signOut` fun
 export const { handle, signIn, signOut } = ...
 ```
 
-Next, add the `+server.ts` file that handles the sign out requests:
+Next, add the `+page.server.ts` file that handles the sign out requests:
 
 ```ts
-// /src/routes/auth/sign-out/+server.ts
+// /src/routes/auth/sign-out/+page.server.ts
 import { signOut } from "$lib/server/auth/auth"
 import type { Actions } from "./$types"
 export const actions: Actions = { default: signOut }
