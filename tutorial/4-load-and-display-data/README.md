@@ -274,7 +274,7 @@ import { eq } from 'drizzle-orm';
 export class UserDAO extends DAO {
     ...
 
-	static async getUserById(id: number): Promise<User | undefined> {
+	static async findUserById(id: number): Promise<User | undefined> {
 		return DAO.db.query.users.findFirst({
 			where: eq(users.id, id)
 		});
