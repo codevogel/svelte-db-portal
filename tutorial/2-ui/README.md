@@ -900,7 +900,7 @@ import { PanelsTopLeft, User, Dumbbell } from 'lucide-svelte';
 export const DASHBOARD_PAGES: PageInfo[] = [
 	{
 		name: 'Overview',
-		url: '/dashboard/',
+		url: '/dashboard',
 		description: 'Dashboard overview.',
 		icon: PanelsTopLeft
 	},
