@@ -152,7 +152,7 @@ AUTH_SECRET=""
 AUTH_GITHUB_ID=""
 AUTH_GITHUB_SECRET=""
 # Comma-separated list of allowed GitHub user IDs (not usernames)
-# Get yours at, e.g., https://api.github.com/user/codevogel
+# Get yours at, e.g., https://api.github.com/users/codevogel
 ALLOWED_GITHUB_IDS=""
 ```
 
