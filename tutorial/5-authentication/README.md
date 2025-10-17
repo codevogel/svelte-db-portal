@@ -105,7 +105,7 @@ We want to re-export this `handle` function in `src/hooks.server.ts`, which ensu
 ```typescript
 // /src/hooks.server.ts
 
-export { handle } from "./auth"
+export { handle } from "$lib/server/auth/auth"
 ```
 
 This `handle` function adds a method `auth()` to [the `event.locals` object](https://svelte.dev/docs/kit/hooks#Server-hooks-locals), which we can access in any `+page.server.ts` or `+layout.server.ts` file, by adding the `locals` parameter to the `load` function.
